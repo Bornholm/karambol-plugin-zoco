@@ -6,7 +6,9 @@
             "email": "wpetit@cadoles.com"
         }
     ],
-    "require": {},
+    "require": {
+        "symfony/filesystem": "^3.1"
+    },
     "autoload": {
       "psr-4": {
         "KarambolZocoPlugin\\": "src/"

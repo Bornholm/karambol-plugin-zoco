@@ -42,7 +42,7 @@ class ExtractBoampCommand extends Command
 
     foreach($archives as $archFile) {
       $stdout = '';
-      $output->writeln(sprintf('<info>Extracting archive "%s"...</info>', $archFile));
+      $output->writeln(sprintf('<info>Extracting archive "%s"...</info>', realpath($archFile)));
       exec(sprintf('tar -xzf "%s" -C "%s" --wildcards *.xml', $archFile, $destDir), $stdout);
       $output->writeln($stdout);
     }

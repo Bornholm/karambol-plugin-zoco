@@ -1,6 +1,6 @@
 <?php
 
-namespace DashboardPlugin\Entity;
+namespace KarambolZocoPlugin\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,11 +17,17 @@ class BoampEntry {
    */
   protected $id;
 
-  public function getId() {
-    return $this->id;
-  }
+  /**
+   * @ORM\Column(type="string", length=20, unique=true)
+   */
+  public $webId;
 
-  public function getBoampId() {
+  /**
+   * @ORM\Column(type="text")
+   */
+  public $xmlFile;
+
+  public function getId() {
     return $this->id;
   }
 
