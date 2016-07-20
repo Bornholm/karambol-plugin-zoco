@@ -1,0 +1,4 @@
+plugins:
+  zoco:
+    class: KarambolZocoPlugin\ZocoPlugin
+    options: ~

@@ -1,0 +1,15 @@
+{
+    "name": "bornholm/karambol-plugin-zoco",
+    "authors": [
+        {
+            "name": "William Petit",
+            "email": "wpetit@cadoles.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+      "psr-4": {
+        "KarambolZocoPlugin\\": "src/"
+      }
+    }
+}
