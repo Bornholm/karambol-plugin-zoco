@@ -16,7 +16,12 @@ class ZocoElasticsearchClientProvider implements ServiceProviderInterface
   }
 
   public function register(Application $app) {
-    $app['zoco_elasticsearch_client'] = ClientBuilder::create()->build();
+    $config = $this->clientConfig;
+    $app['zoco_elasticsearch_client'] = ClientBuilder::create()
+      ->setHosts($config['hosts'])
+      ->setLogger($app['logger'])
+      ->build()
+    ;
   }
 
   public function boot(Application $app) {}

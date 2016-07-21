@@ -17,7 +17,7 @@ class FetchBoampCommand extends BoampCommand
   protected function configure()
   {
     $this
-      ->setName('zoco-plugin:fetch-boamp-archives')
+      ->setName('zoco-plugin:boamp:fetch-archives')
       ->setDescription('Télécharge les fichiers XML du BOAMP à partir du serveur FTP de la DILA')
       ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
     ;
@@ -31,8 +31,8 @@ class FetchBoampCommand extends BoampCommand
     $ftpServer = $this->options['ftp']['host'];
     $ftpUser = $this->options['ftp']['user'];
     $ftpPassword = $this->options['ftp']['password'];
-    $baseDestDir = $this->options['local_data_dir'];
-    $remoteDir = $this->options['ftp']['base_remote_dir'].'/'.$input->getOption('year');
+    $baseDestDir = $this->getDataDirectory();
+    $remoteDir = $this->getRemoteDir($input->getOption('year'));
     $destDir = $baseDestDir.'/archives/'.$remoteDir;
 
     if(!file_exists($destDir)) mkdir($destDir, 0700, true);

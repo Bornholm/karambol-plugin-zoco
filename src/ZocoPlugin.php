@@ -20,6 +20,7 @@ class ZocoPlugin implements PluginInterface {
     $app['console']->add(new Command\FetchBoampCommand($app, $boampOptions));
     $app['console']->add(new Command\ExtractBoampCommand($app, $boampOptions));
     $app['console']->add(new Command\ParseBoampCommand($app, $boampOptions));
+      $app['console']->add(new Command\CreateIndexCommand($app, $options['elasticsearch']['index']));
   }
 
   protected function addEntities(KarambolApp $app) {

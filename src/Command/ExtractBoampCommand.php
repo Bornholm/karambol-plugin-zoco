@@ -14,7 +14,7 @@ class ExtractBoampCommand extends BoampCommand
 
   protected function configure() {
     $this
-      ->setName('zoco-plugin:extract-boamp-archives')
+      ->setName('zoco-plugin:boamp:extract-archives')
       ->setDescription('Extrait les fichiers XML des archives du BOAMP')
       ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
     ;
@@ -22,8 +22,8 @@ class ExtractBoampCommand extends BoampCommand
 
   protected function execute(InputInterface $input, OutputInterface $output) {
 
-    $baseDestDir = $this->options['local_data_dir'];
-    $remoteDir = $this->options['ftp']['base_remote_dir'].'/'.$input->getOption('year');
+    $baseDestDir = $this->getDataDirectory();
+    $remoteDir = $this->getRemoteDir($input->getOption('year'));
     $destDir = $baseDestDir.'/xml/'.$remoteDir;
 
     if(!file_exists($destDir)) mkdir($destDir, 0700, true);

@@ -17,4 +17,14 @@ class BoampCommand extends Command
     $this->options = $options;
   }
 
+  protected function getDataDirectory() {
+    $localDataDir = $this->options['data_dir'];
+    return $localDataDir && $localDataDir[0] === DIRECTORY_SEPARATOR ? $localDataDir : $this->app['app_path']->getPath($localDataDir);
+  }
+
+  protected function getRemoteDir($year) {
+    return $this->options['ftp']['base_remote_dir'].DIRECTORY_SEPARATOR.$year;
+  }
+
+
 }
