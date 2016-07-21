@@ -2,7 +2,6 @@
 
 namespace KarambolZocoPlugin\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,24 +11,17 @@ use KarambolZocoPlugin\Entity\BoampEntry;
 use Symfony\Component\Filesystem\Filesystem;
 use \SimpleXMLElement;
 
-class ParseBoampCommand extends Command
+class ParseBoampCommand extends BoampCommand
 {
 
-  protected $app;
   protected $output;
-
-  public function __construct(KarambolApp $app) {
-    parent::__construct();
-    $this->app = $app;
-  }
 
   protected function configure()
   {
     $this
       ->setName('zoco-plugin:parse-boamp-xml')
       ->setDescription('Analyse les fichiers XML du BOAMP et les intégre à la base de connaissance de Zoco.')
-      ->addOption('dest-dir', null, InputOption::VALUE_OPTIONAL, 'Chemin du dossier de destination pour les archives', realpath(__DIR__.'/../../.boamp'))
-      ->addOption('remote-dir', null, InputOption::VALUE_OPTIONAL, 'Chemin de base du dossier distant sur le serveur FTP', 'BOAMP/'.date("Y"))
+      ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
       ->addOption('stop-on-parse-error', null, InputOption::VALUE_OPTIONAL, 'Arreter le traitement en cas d\'erreur d\'analyse.', false)
     ;
   }
@@ -40,8 +32,8 @@ class ParseBoampCommand extends Command
     $this->output = $output;
     $fs = new Filesystem();
 
-    $baseDestDir = $input->getOption('dest-dir');
-    $remoteDir = $input->getOption('remote-dir');
+    $baseDestDir = $this->options['local_data_dir'];
+    $remoteDir = $this->options['ftp']['base_remote_dir'].'/'.$input->getOption('year');
     $stopOnParseError = $input->getOption('stop-on-parse-error') === 'true';
 
     $xmlFiles = glob($baseDestDir.'/xml/'.$remoteDir.'/*/*.xml');

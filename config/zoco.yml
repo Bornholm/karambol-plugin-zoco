@@ -1,4 +1,15 @@
 plugins:
   zoco:
     class: KarambolZocoPlugin\ZocoPlugin
-    options: ~
+    options:
+      boamp:
+        # Répertoire de base où stocker les archives/XML du BOAMP, relatif au répertoire de l'application Karambol
+        local_data_dir: data/zoco
+        # Définition du serveur FTP sur lequel télécharger les fichiers du BOAMP
+        ftp:
+          host: echanges.dila.gouv.fr
+          user: anonymous
+          password: anonymous
+          base_remote_dir: BOAMP
+      elasticsearch:
+        hosts: ['http://127.0.0.1:9200/']

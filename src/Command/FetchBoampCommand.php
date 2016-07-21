@@ -2,35 +2,24 @@
 
 namespace KarambolZocoPlugin\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Karambol\KarambolApp;
 
-class FetchBoampCommand extends Command
+class FetchBoampCommand extends BoampCommand
 {
 
-  protected $app;
   protected $output;
   protected $lastReconnect;
-
-  public function __construct(KarambolApp $app) {
-    parent::__construct();
-    $this->app = $app;
-  }
 
   protected function configure()
   {
     $this
       ->setName('zoco-plugin:fetch-boamp-archives')
       ->setDescription('Télécharge les fichiers XML du BOAMP à partir du serveur FTP de la DILA')
-      ->addOption('ftp-host', null, InputOption::VALUE_OPTIONAL, 'Adresse du serveur FTP où récupérer les archives du BOAMP', 'echanges.dila.gouv.fr')
-      ->addOption('ftp-user', null, InputOption::VALUE_OPTIONAL, 'Utilisateur pour le serveur FTP', 'anonymous')
-      ->addOption('ftp-password', null, InputOption::VALUE_OPTIONAL, 'Mot de passe pour le serveur FTP', 'anonymous')
-      ->addOption('dest-dir', null, InputOption::VALUE_OPTIONAL, 'Chemin du dossier de destination pour les archives', __DIR__.'/../../.boamp')
-      ->addOption('remote-dir', null, InputOption::VALUE_OPTIONAL, 'Chemin de base du dossier distant sur le serveur FTP', 'BOAMP/'.date("Y"))
+      ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
     ;
   }
 
@@ -39,11 +28,11 @@ class FetchBoampCommand extends Command
 
     $this->output = $output;
 
-    $ftpServer = $input->getOption('ftp-host');
-    $ftpUser = $input->getOption('ftp-user');
-    $ftpPassword = $input->getOption('ftp-password');
-    $baseDestDir = $input->getOption('dest-dir');
-    $remoteDir = $input->getOption('remote-dir');
+    $ftpServer = $this->options['ftp']['host'];
+    $ftpUser = $this->options['ftp']['user'];
+    $ftpPassword = $this->options['ftp']['password'];
+    $baseDestDir = $this->options['local_data_dir'];
+    $remoteDir = $this->options['ftp']['base_remote_dir'].'/'.$input->getOption('year');
     $destDir = $baseDestDir.'/archives/'.$remoteDir;
 
     if(!file_exists($destDir)) mkdir($destDir, 0700, true);

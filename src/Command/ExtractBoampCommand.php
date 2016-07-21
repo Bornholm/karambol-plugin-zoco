@@ -9,31 +9,21 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Karambol\KarambolApp;
 
-class ExtractBoampCommand extends Command
+class ExtractBoampCommand extends BoampCommand
 {
 
-  protected $app;
-
-  public function __construct(KarambolApp $app) {
-    parent::__construct();
-    $this->app = $app;
-  }
-
-  protected function configure()
-  {
+  protected function configure() {
     $this
       ->setName('zoco-plugin:extract-boamp-archives')
       ->setDescription('Extrait les fichiers XML des archives du BOAMP')
-      ->addOption('dest-dir', null, InputOption::VALUE_OPTIONAL, 'Chemin du dossier de destination pour les archives', __DIR__.'/../../.boamp')
-      ->addOption('remote-dir', null, InputOption::VALUE_OPTIONAL, 'Chemin de base du dossier distant sur le serveur FTP', 'BOAMP/'.date("Y"))
+      ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
     ;
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output)
-  {
+  protected function execute(InputInterface $input, OutputInterface $output) {
 
-    $baseDestDir = $input->getOption('dest-dir');
-    $remoteDir = $input->getOption('remote-dir');
+    $baseDestDir = $this->options['local_data_dir'];
+    $remoteDir = $this->options['ftp']['base_remote_dir'].'/'.$input->getOption('year');
     $destDir = $baseDestDir.'/xml/'.$remoteDir;
 
     if(!file_exists($destDir)) mkdir($destDir, 0700, true);
