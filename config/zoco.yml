@@ -18,19 +18,12 @@ plugins:
           settings: ~
           mappings:
             boamp:
-              _source:
-                enabled: true
-              properties:
-                DONNEES:
-                  type: object
-                  properties:
-                    RECTIF:
-                      type: object
-                      properties:
-                        MODIFICATION:
-                          type: object
-                          properties:
-                            TXT_INIT:
-                              type: string
-                            LIRE:
-                              type: string
+              dynamic_templates:
+                - modification_txt_init:
+                    path_match: "*.DONNEES.RECTIF.MODIFICATION.TXT_INIT"
+                    mapping:
+                      type: string
+                - modification_lire:
+                    path_match: "*.DONNEES.RECTIF.MODIFICATION.LIRE"
+                    mapping:
+                      type: string

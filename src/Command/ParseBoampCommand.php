@@ -19,7 +19,8 @@ class ParseBoampCommand extends BoampCommand
       ->setName('zoco-plugin:boamp:parse-xml')
       ->setDescription('Analyse les fichiers XML du BOAMP et les intégre à la base de connaissance de Zoco.')
       ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
-      ->addOption('stop-on-parse-error', null, InputOption::VALUE_OPTIONAL, 'Arreter le traitement en cas d\'erreur d\'analyse.', false)
+      ->addOption('stop-on-parse-error', null, InputOption::VALUE_OPTIONAL, 'Arreter le traitement en cas d\'erreur d\'analyse', false)
+      ->addOption('dry-run', null, InputOption::VALUE_OPTIONAL, 'Ne pas appliquer les changements', false)
     ;
   }
 
@@ -30,16 +31,12 @@ class ParseBoampCommand extends BoampCommand
     $baseDestDir = $this->getDataDirectory();
     $remoteDir = $this->getRemoteDir($input->getOption('year'));
     $stopOnParseError = $input->getOption('stop-on-parse-error') === 'true';
+    $dryRun = $input->getOption('dry-run');
 
     $xmlFiles = glob($baseDestDir.'/xml/'.$remoteDir.'/*/*.xml');
-
     $total = count($xmlFiles);
-    $bulkSize = 250;
-    $totalBulks = (int)($total/$bulkSize);
 
-    $params = ['body' => []];
-    $bulkCount = 0;
-    foreach($xmlFiles as $xmlFile) {
+    foreach($xmlFiles as $i => $xmlFile) {
 
       $xmlStr = file_get_contents($xmlFile);
       $xml = null;
@@ -53,29 +50,35 @@ class ParseBoampCommand extends BoampCommand
         continue;
       }
 
-      $webId = (string)$xml->GESTION->REFERENCE->IDWEB;
+      $webId = null;
+      $prevAnnouncement = $xml->xpath('//GESTION/MARCHE/ANNONCE_ANTERIEUR');
+
+      if(count($prevAnnouncement) > 0) {
+        $webId = (string)$xml->GESTION->MARCHE->ANNONCE_ANTERIEUR->REFERENCE->IDWEB;
+      } else {
+        $webId = (string)$xml->GESTION->REFERENCE->IDWEB;
+      }
+
       $body = json_decode(json_encode($xml), true);
 
-      $params['body'][] = [
-        'index' => [
-          '_index' => 'zoco',
-          '_type' => 'boamp'
+      $params = [
+        'index' => 'zoco',
+        'type' => 'boamp',
+        'id' => $webId,
+        'body' => [
+          'doc' => [
+            $webId => $body
+          ],
+          'upsert' => [
+            $webId => $body
+          ]
         ]
       ];
 
-      $params['body'][] = $body;
-
-      $flush = count($params['body']) >= $bulkSize*2;
-      if($flush) {
-        $output->writeln(sprintf('<info>Flushing bulk (%s/%s)...</info>', $bulkCount++, $totalBulks));
-        $client->bulk($params);
-        $params = ['body' => []];
-      }
+      $output->writeln(sprintf('<info>Indexing entry %s/%s...</info>', $i, $total));
+      if(!$dryRun) $client->update($params);
 
     }
-
-    $output->writeln('<info>Flushing last bulk...</info>');
-    $client->bulk($params);
 
     $output->writeln('<info>Done.</info>');
 
