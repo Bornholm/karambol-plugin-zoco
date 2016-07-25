@@ -19,6 +19,7 @@ class ParseBoampCommand extends BoampCommand
       ->setName('zoco-plugin:boamp:parse-xml')
       ->setDescription('Analyse les fichiers XML du BOAMP et les intégre à la base de connaissance de Zoco.')
       ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
+      ->addOption('bulk-size', null, InputOption::VALUE_OPTIONAL, 'Nombre d\'éléments à traiter par lot', 1000)
       ->addOption('stop-on-parse-error', null, InputOption::VALUE_OPTIONAL, 'Arreter le traitement en cas d\'erreur d\'analyse', false)
       ->addOption('dry-run', null, InputOption::VALUE_OPTIONAL, 'Ne pas appliquer les changements', false)
     ;
@@ -32,11 +33,18 @@ class ParseBoampCommand extends BoampCommand
     $remoteDir = $this->getRemoteDir($input->getOption('year'));
     $stopOnParseError = $input->getOption('stop-on-parse-error') === 'true';
     $dryRun = $input->getOption('dry-run');
+    $bulkSize = $input->getOption('bulk-size');
 
+    $output->writeln('<info>Selecting XML files...</info>');
     $xmlFiles = glob($baseDestDir.'/xml/'.$remoteDir.'/*/*.xml');
     $total = count($xmlFiles);
+    $totalBulks = (int)($total/$bulkSize);
+    $bulk = ['body' => []];
+    $bulkIndex = 0;
 
-    foreach($xmlFiles as $i => $xmlFile) {
+    $output->writeln(sprintf('<comment>%s file to index.</comment>', $total));
+
+    foreach($xmlFiles as $xmlFile) {
 
       $xmlStr = file_get_contents($xmlFile);
       $xml = null;
@@ -51,34 +59,55 @@ class ParseBoampCommand extends BoampCommand
       }
 
       $webId = null;
+      $docId = null;
       $prevAnnouncement = $xml->xpath('//GESTION/MARCHE/ANNONCE_ANTERIEUR');
+      $isModification = count($prevAnnouncement) > 0;
 
-      if(count($prevAnnouncement) > 0) {
-        $webId = (string)$xml->GESTION->MARCHE->ANNONCE_ANTERIEUR->REFERENCE->IDWEB;
-      } else {
+      if($isModification) {
+        $docId = (string)$xml->GESTION->MARCHE->ANNONCE_ANTERIEUR->REFERENCE->IDWEB;
         $webId = (string)$xml->GESTION->REFERENCE->IDWEB;
+      } else {
+        $docId = $webId = (string)$xml->GESTION->REFERENCE->IDWEB;
       }
 
       $body = json_decode(json_encode($xml), true);
 
-      $params = [
-        'index' => 'zoco',
-        'type' => 'boamp',
-        'id' => $webId,
-        'body' => [
-          'doc' => [
-            $webId => $body
-          ],
-          'upsert' => [
-            $webId => $body
-          ]
+      $bulk['body'][] = [
+        'update' => [
+          '_index' => 'zoco',
+          '_type' => 'boamp',
+          '_id' => $docId
         ]
       ];
 
-      $output->writeln(sprintf('<info>Indexing entry %s/%s...</info>', $i, $total));
-      if(!$dryRun) $client->update($params);
+      $doc = [];
+
+      if(!$isModification) {
+        $doc['main'] = $body;
+      } else {
+        $doc['modifications'] = [
+          $webId => $body
+        ];
+      }
+
+      $bulk['body'][] = [
+        'doc' => $doc,
+        'doc_as_upsert' => true
+      ];
+
+      $bulkItemsCount = count($bulk['body'])/2;
+      $flush = $bulkItemsCount % $bulkSize === 0;
+      if($flush) {
+        $output->writeln(sprintf('<comment>Flushing bulk %s/%s...</comment>', $bulkIndex, $totalBulks));
+        if(!$dryRun) $client->bulk($bulk);
+        $bulk = ['body' => []];
+        $bulkIndex++;
+      }
 
     }
+
+    $output->writeln(sprintf('<comment>Flushing bulk %s/%s...</comment>', $bulkIndex, $totalBulks));
+    if(!$dryRun) $client->bulk($bulk);
 
     $output->writeln('<info>Done.</info>');
 

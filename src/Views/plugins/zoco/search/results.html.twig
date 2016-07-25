@@ -16,15 +16,38 @@
         </form>
       </div>
     </div>
-    <div class="col-md-12">
-      <ul class="list-group">
-        {% for hit in results.hits %}
-          <li class="list-group-item">
-            <h4 class="list-group-item-heading"></h4>
-            <p class="list-group-item-text">...</p>
-          </li>
-        {% endfor %}
-      </ul>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table">
+          <thead>
+            <tr>
+              <td colspan="5" style="text-align: right">
+                <b>Résultats: {{ total }}</b>
+              </td>
+            </tr>
+            <tr>
+              <th>ID</th>
+              <th>Titre</th>
+              <th>Date de publication</th>
+              <th>Date de clôture</th>
+              <th>Épingler</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in results %}
+              <tr>
+                <td>{{entry.type|upper }}-{{entry.id}}</td>
+                <td>{{ entry.title|capitalize }}</td>
+                <td>{{ entry.publicationDate|date }}</td>
+                <td>{{ entry.closingDate|date }}</td>
+                <td>
+                  <a href="#" class="btn btn-sm btn-default"><i class="fa fa-thumb-tack"></i></a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+    {% include 'plugins/zoco/search/_pagination.html.twig' %}
 {% endblock %}

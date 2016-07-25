@@ -15,10 +15,19 @@ plugins:
         hosts: ['http://127.0.0.1:9200/']
         index:
           name: zoco
-          settings: ~
+          settings:
+            analysis:
+              analyzer:
+                default:
+                  type: french
           mappings:
             boamp:
               dynamic_templates:
+                - modifications:
+                    path_match: "modifications.*-*"
+                    mapping:
+                      type: nested
+                      stored: true
                 - modification_txt_init:
                     path_match: "*.DONNEES.RECTIF.MODIFICATION.TXT_INIT"
                     mapping:
