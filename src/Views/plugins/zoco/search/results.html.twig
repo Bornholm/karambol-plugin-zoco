@@ -1,10 +1,10 @@
-{% extends 'base.html.twig' %}
+{% extends 'home/index.html.twig' %}
+{% import 'plugins/zoco/search/_entry_tags.html.twig' as entryTags %}
 
-{% block body %}
+{% block body_content %}
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
-        <h1>Zoco</h1>
         <form action="{{ path('plugins_zoco_search') }}" method="get" class="form">
           <div class="input-group input-group-lg">
             <span class="input-group-addon" id="search-input"><i class="fa fa-search"></i></span>
@@ -22,15 +22,16 @@
           <thead>
             <tr>
               <td colspan="5" style="text-align: right">
-                <b>Résultats: {{ total }}</b>
+                <b>{{ 'plugins.zoco.search.total_results'|trans() }}: {{ total }}</b>
               </td>
             </tr>
             <tr>
-              <th>ID</th>
-              <th>Titre</th>
-              <th>Date de publication</th>
-              <th>Date de clôture</th>
-              <th>Épingler</th>
+              <th>{{ 'plugins.zoco.search.entry_id'|trans() }}</th>
+              <th>{{ 'plugins.zoco.search.entry_title'|trans() }}</th>
+              <th>{{ 'plugins.zoco.search.tags'|trans() }}</th>
+              <th>{{ 'plugins.zoco.search.entry_publication_date'|trans() }}</th>
+              <th>{{ 'plugins.zoco.search.entry_closing_date'|trans() }}</th>
+              <th>{{ 'plugins.zoco.search.actions'|trans() }}</th>
             </tr>
           </thead>
           <tbody>
@@ -38,10 +39,22 @@
               <tr>
                 <td>{{entry.type|upper }}-{{entry.id}}</td>
                 <td>{{ entry.title|capitalize }}</td>
-                <td>{{ entry.publicationDate|date }}</td>
-                <td>{{ entry.closingDate|date }}</td>
+                <td>{{ entryTags.getTags(entry) }}</td>
+                <td>{{ entry.publicationDate|date('d/m/Y') }}</td>
+                <td>{{ entry.closingDate|date('d/m/Y H:i:s') }}</td>
                 <td>
-                  <a href="#" class="btn btn-sm btn-default"><i class="fa fa-thumb-tack"></i></a>
+                  <div class="btn-group" role="group">
+                    <a href="{{ path('plugins_zoco_search_entry', {'entryType': entry.type, 'entryId': entry.id}) }}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+                    <a disabled="disabled" href="#" class="btn btn-default"><i class="fa fa-thumb-tack"></i></a>
+                  </div>
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="5" style="text-align: center;">
+                  <div class="alert alert-info">
+                    <i class="fa fa-exclamation-circle"></i> {{ 'plugins.zoco.search.no_results'|trans() }}
+                  </div>
                 </td>
               </tr>
             {% endfor %}
@@ -49,5 +62,5 @@
         </table>
       </div>
     </div>
-    {% include 'plugins/zoco/search/_pagination.html.twig' %}
+    {% if total > 0 %}{% include 'plugins/zoco/search/_pagination.html.twig' %}{% endif %}
 {% endblock %}

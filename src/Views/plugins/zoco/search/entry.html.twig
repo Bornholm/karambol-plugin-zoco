@@ -1,0 +1,59 @@
+{% extends 'home/index.html.twig' %}
+{% import 'plugins/zoco/search/_entry_tags.html.twig' as entryTags %}
+
+{% block head_style %}
+  {{ parent() }}
+  <link href="{{ asset("plugins/zoco/css/zoco.css") }}" rel="stylesheet" />
+{% endblock %}
+
+{% block body_content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="search-entry-title">{{ entry.type|upper }}-{{ entry.id|upper }} <small>{{ entryTags.getTags(entry) }}</small></h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+          <h2 class="panel-title pull-left"><i class="fa fa-info-circle"></i> {{ 'plugins.zoco.entry.informations'|trans }}</h2>
+        </div>
+        <div class="panel-body">
+          <dl>
+            <dt>{{'plugins.zoco.entry.title'|trans}}</dt>
+            <dd>{{entry.title}}</dd>
+            {% if entry.description != entry.title %}
+              <dt>{{'plugins.zoco.entry.description'|trans}}</dt>
+              <dd>{{entry.description}}</dd>
+            {% endif %}
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading"><h2 class="panel-title"><i class="fa fa-calendar"></i> {{ 'plugins.zoco.entry.calendar'|trans }}</h2></div>
+        <div class="panel-body">
+          <dl class="dl-horizontal">
+            <dt>{{'plugins.zoco.entry.publication_date'|trans}}</dt>
+            <dd>{{entry.publicationDate|date('d/m/Y')}}</dd>
+            <dt>{{'plugins.zoco.entry.closing_date'|trans}}</dt>
+            <dd>{{entry.closingDate|date('d/m/Y H:i:s')}}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading"><h2 class="panel-title"><i class="fa fa-user"></i> {{ 'plugins.zoco.entry.contracting_authority'|trans }}</h2></div>
+        <div class="panel-body">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

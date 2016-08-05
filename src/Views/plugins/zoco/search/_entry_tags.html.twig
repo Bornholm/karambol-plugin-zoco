@@ -1,0 +1,7 @@
+{% macro getTags(entry) %}
+  {% if 'now'|date('YmdHis') > entry.closingDate|date('YmdHis') %}
+    <span class="label label-danger">{{'plugins.zoco.tags.closed'|trans}}</span>
+  {% else %}
+    <span class="label label-info">{{'plugins.zoco.tags.open'|trans}}</span>
+  {% endif %}
+{% endmacro %}

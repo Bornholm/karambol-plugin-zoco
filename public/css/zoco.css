@@ -1,0 +1,17 @@
+dd + dt {
+  margin-top: 15px;
+}
+
+dl.dl-horizontal dd + dt {
+  margin-top: 0;
+}
+
+h2.search-entry-title {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+h2.search-entry-title small {
+  vertical-align: text-top;
+  line-height: 30px;
+}

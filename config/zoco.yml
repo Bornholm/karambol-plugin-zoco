@@ -36,3 +36,8 @@ plugins:
                     path_match: "*.DONNEES.RECTIF.MODIFICATION.LIRE"
                     mapping:
                       type: string
+
+assets:
+  zoco-plugin:
+    - { src: vendor/bornholm/karambol-plugin-zoco/public/css, dest: public/plugins/zoco/css }
+    - { src: vendor/bornholm/karambol-plugin-zoco/public/js, dest: public/plugins/zoco/js }

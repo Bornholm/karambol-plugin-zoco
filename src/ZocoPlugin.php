@@ -3,19 +3,29 @@
 namespace KarambolZocoPlugin;
 
 use Karambol\KarambolApp;
-use Karambol\Plugin\PluginInterface;
+use Karambol\Plugin\Plugin;
 use KarambolZocoPlugin\Command as Command;
 use KarambolZocoPlugin\Provider\ZocoElasticsearchClientProvider;
 use KarambolZocoPlugin\Controller as Controller;
+use KarambolZocoPlugin\Controller\SearchController;
 
-class ZocoPlugin implements PluginInterface {
+class ZocoPlugin extends Plugin {
 
   public function boot(KarambolApp $app, array $options) {
-    $this->addViews($app);
-    $this->addEntities($app);
+
+    parent::boot($app, $options);
+
+    $this->registerViews(__DIR__.'/Views');
+    $this->registerEntities(__DIR__.'/Entity');
+    $this->registerControllers([
+      Controller\SearchController::class,
+      Controller\SearchEntryController::class
+    ]);
+    $this->registerTranslation('fr', __DIR__.'/../i18n/fr.yml');
+    $this->addSystemPages($app);
     $this->addCommands($app, $options);
     $this->addServices($app, $options);
-    $this->addControllers($app);
+
   }
 
   protected function addCommands(KarambolApp $app, array $options) {
@@ -27,24 +37,14 @@ class ZocoPlugin implements PluginInterface {
     $app['console']->add(new Command\SearchIndexCommand($app, $options['elasticsearch']['index']));
   }
 
-  protected function addEntities(KarambolApp $app) {
-    $annotationDriver = $app['orm']->getConfiguration()->getMetadataDriverImpl();
-    $annotationDriver->addPaths([__DIR__.'/Entity']);
-  }
-
   protected function addServices(KarambolApp $app, array $options) {
     $elasticsearchOptions = $options['elasticsearch'];
     $app->register(new ZocoElasticsearchClientProvider($elasticsearchOptions));
   }
 
-  protected function addControllers(KarambolApp $app) {
-    $ctrl = new Controller\SearchController($app);
-    $ctrl->bindTo($app);
+  protected function addSystemPages($app) {
+    $urlGen = $app['url_generator'];
+    $this->registerSystemPage('plugins.zoco.search_page', $urlGen->generate('plugins_zoco_search'), 'zoco-search');
   }
 
-  public function addViews($app) {
-    $twigPaths = $app['twig.path'];
-    array_unshift($twigPaths, __DIR__.'/Views');
-    $app['twig.path'] = $twigPaths;
-  }
 }

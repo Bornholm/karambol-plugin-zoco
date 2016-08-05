@@ -1,0 +1,24 @@
+plugins:
+  zoco:
+    search_page: Rechercher un marché
+    search:
+      search_placeholder: "Exemple: logiciel && libre"
+      no_results: Aucun résultat. Veuillez modifier votre recherche.
+      entry_id: Identifiant
+      entry_title: Titre
+      entry_publication_date: Date de publication
+      entry_closing_date: Date de clôture
+      actions: Actions
+      total_results: Résultats
+      tags: Tags
+    entry:
+      title: Titre
+      description: Description
+      calendar: Calendrier
+      closing_date: Date de clôture
+      publication_date: Date de publication
+      informations: Informations
+      contracting_authority: Pouvoir adjudicateur
+    tags:
+      open: Ouvert
+      closed: Clos

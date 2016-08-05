@@ -21,9 +21,7 @@ class SearchController extends Controller {
     $page = $request->query->get('p', 0);
     $limit = $request->query->get('l', 50);
 
-    if(empty($search)) return $twig->render('plugins/zoco/search/index.html.twig');
-
-    return $this->handleSearch($search, $page*$limit, $limit);
+    return $this->handleSearch(empty($search) ? '' : $search, $page*$limit, $limit);
 
   }
 

@@ -20,8 +20,9 @@ class ParseBoampCommand extends BoampCommand
       ->setDescription('Analyse les fichiers XML du BOAMP et les intégre à la base de connaissance de Zoco.')
       ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
       ->addOption('bulk-size', null, InputOption::VALUE_OPTIONAL, 'Nombre d\'éléments à traiter par lot', 1000)
-      ->addOption('stop-on-parse-error', null, InputOption::VALUE_OPTIONAL, 'Arreter le traitement en cas d\'erreur d\'analyse', false)
-      ->addOption('dry-run', null, InputOption::VALUE_OPTIONAL, 'Ne pas appliquer les changements', false)
+      ->addOption('newer-than', null, InputOption::VALUE_OPTIONAL, 'Extraire uniquement les archives créées/modifiées plus récemment que l\'espace de temps donné', null)
+      ->addOption('stop-on-parse-error', null, InputOption::VALUE_NONE, 'Arreter le traitement en cas d\'erreur d\'analyse')
+      ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Ne pas appliquer les changements')
     ;
   }
 
@@ -32,8 +33,15 @@ class ParseBoampCommand extends BoampCommand
     $baseDestDir = $this->getDataDirectory();
     $remoteDir = $this->getRemoteDir($input->getOption('year'));
     $stopOnParseError = $input->getOption('stop-on-parse-error') === 'true';
+    $newerThan = $input->getOption('newer-than');
     $dryRun = $input->getOption('dry-run');
     $bulkSize = $input->getOption('bulk-size');
+
+    if(!empty($newerThan)) {
+      $newerThan = new \DateInterval($newerThan);
+      $pivotDate = new \DateTime();
+      $pivotDate->sub($newerThan);
+    }
 
     $output->writeln('<info>Selecting XML files...</info>');
     $xmlFiles = glob($baseDestDir.'/xml/'.$remoteDir.'/*/*.xml');
@@ -45,6 +53,24 @@ class ParseBoampCommand extends BoampCommand
     $output->writeln(sprintf('<comment>%s file to index.</comment>', $total));
 
     foreach($xmlFiles as $xmlFile) {
+
+      if($newerThan !== null) {
+
+        $lastModifTimestamp = filemtime($xmlFile);
+        $lastModification = new \DateTime();
+        $lastModification->setTimestamp($lastModifTimestamp);
+
+        if($lastModification < $pivotDate) {
+          $output->writeln(sprintf(
+            '<comment>The xml file "%s" (%s) is older than %s. Skipping.</comment>',
+            $xmlFile,
+            $lastModification->format('d/M/Y H:i:s'),
+            $newerThan->format('%d day(s)'))
+          );
+          continue;
+        }
+
+      }
 
       $xmlStr = file_get_contents($xmlFile);
       $xml = null;
