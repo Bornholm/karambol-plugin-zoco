@@ -14,6 +14,8 @@ class SearchController extends Controller {
 
   public function showSearchIndex() {
 
+    $this->assertUrlAccessAuthorization();
+
     $request = $this->get('request');
     $twig = $this->get('twig');
 

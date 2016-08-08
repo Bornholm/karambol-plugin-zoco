@@ -2,23 +2,35 @@ plugins:
   zoco:
     search_page: Rechercher un marché
     search:
-      search_placeholder: "Exemple: logiciel && libre"
+      search_placeholder: "Exemple: logiciel libre"
       no_results: Aucun résultat. Veuillez modifier votre recherche.
       entry_id: Identifiant
-      entry_title: Titre
+      entry_title: Intitulé
       entry_publication_date: Date de publication
       entry_closing_date: Date de clôture
       actions: Actions
       total_results: Résultats
       tags: Tags
     entry:
-      title: Titre
+      title: Intitulé
       description: Description
-      calendar: Calendrier
+      calendar: Calendrier de participation
       closing_date: Date de clôture
       publication_date: Date de publication
-      informations: Informations
-      contracting_authority: Pouvoir adjudicateur
+      informations: Informations générales
+      contracting_authority: Entité publique
+      publication_platform: Plateforme de publication
+      publication_url: URL de la publication
+      fix_publication_url: L'URL publiée par le BOAMP est parfois erronée ou incomplète. Vous pouvez la corriger en cliquant sur le bouton ci-dessus (TODO).
+      pin: Épingler
+      boamp:
+        name: Nom
+        contact: Contact
+        phone: Téléphone
+        address: Adresse postale
+        email: Adresse courriel
+        lots: Lots
+        no_lots: Pas de lots définis pour ce marché.
     tags:
       open: Ouvert
       closed: Clos

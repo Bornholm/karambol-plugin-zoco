@@ -16,6 +16,8 @@ class SearchEntryController extends Controller {
 
   public function showSearchEntry($entryType, $entryId) {
 
+    $this->assertUrlAccessAuthorization();
+
     $twig = $this->get('twig');
     $esClient = $this->get('zoco_elasticsearch_client');
 
@@ -26,6 +28,8 @@ class SearchEntryController extends Controller {
     ];
 
     $result = $esClient->get($params);
+
+    // dump($result);
 
     switch($entryType) {
       case 'boamp':

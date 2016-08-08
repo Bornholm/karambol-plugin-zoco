@@ -10,5 +10,6 @@ interface SearchEntryInterface {
   public function getId();
   public function getPublicationDate();
   public function getClosingDate();
+  public function getPublicationUrl();
 
 }

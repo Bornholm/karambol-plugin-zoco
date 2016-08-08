@@ -36,7 +36,26 @@ class BoampEntry implements SearchEntryInterface {
   }
 
   public function getClosingDate() {
-    return $this->get('[main][GESTION][INDEXATION][DATE_LIMITE_REPONSE]');
+    $closingDate = $this->get('[main][GESTION][INDEXATION][DATE_LIMITE_REPONSE]');
+    if(empty($closingDate)) $closingDate = $this->get('[main][DONNEES][CONDITION_DELAI][RECEPT_OFFRES]');
+    return $closingDate;
+  }
+
+  public function getPublicationUrl() {
+    $publicationUrl = $this->get('[main][DONNEES][IDENTITE][URL_PARTICIPATION]');
+    if(empty($publicationUrl)) $publicationUrl = $this->get('[main][DONNEES][IDENTITE][URL_PROFIL_ACHETEUR]');
+    return $publicationUrl;
+  }
+
+  public function hasLots() {
+    $hasLots = $this->get('[main][DONNEES][OBJET][DIV_EN_LOTS][OUI]');
+    return $hasLots !== null;
+  }
+
+  public function getLots() {
+    $lots = $this->get('[main][DONNEES][OBJET][LOTS][LOT]');
+    if(isset($lots['NUM'])) return [$lots];
+    return $lots;
   }
 
   public function get($sourcePath) {

@@ -1,0 +1,59 @@
+{% import _self as self %}
+
+{% macro description_item(entry, entryLabel, sourcePath) %}
+  {% set value = entry.get(sourcePath) %}
+  {% if value is not empty %}
+  <dt>{{entryLabel|trans}}</dt>
+  <dd>{{value}}</dd>
+  {% endif %}
+{% endmacro %}
+
+<div class="row">
+
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading"><h2 class="panel-title"><i class="fa fa-th-large"></i> {{ 'plugins.zoco.entry.boamp.lots'|trans }}</h2></div>
+      <div class="panel-body">
+        {% if entry.hasLots %}
+        <dl>
+          {% for lot in entry.lots %}
+            <dt>{{ lot.INTITULE is defined ? lot.INTITULE : 'Lot ' ~ loop.index }}</dt>
+            <dd>{{ lot.DESCRIPTION }}</dd>
+          {% endfor %}
+        </dl>
+        {% else %}
+          <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i> {{ 'plugins.zoco.entry.boamp.no_lots'|trans }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading"><h2 class="panel-title"><i class="fa fa-institution"></i> {{ 'plugins.zoco.entry.contracting_authority'|trans }}</h2></div>
+      <div class="panel-body">
+        <dl>
+          {% set ca_url = entry.get('[main][DONNEES][IDENTITE][URL]') %}
+          <dt>{{'plugins.zoco.entry.boamp.name'|trans}}</dt>
+          {% if ca_url is empty %}
+            <dd>{{entry.get('[main][DONNEES][IDENTITE][DENOMINATION]')}}</dd>
+          {% else %}
+            <dd><a href="{{ca_url}}">{{entry.get('[main][DONNEES][IDENTITE][DENOMINATION]')}}</a></dd>
+          {% endif %}
+
+          {{ _self.description_item(entry, 'plugins.zoco.entry.boamp.contact', '[main][DONNEES][IDENTITE][CORRESPONDANT]') }}
+          {{ _self.description_item(entry, 'plugins.zoco.entry.boamp.email', '[main][DONNEES][IDENTITE][MEL]') }}
+          {{ _self.description_item(entry, 'plugins.zoco.entry.boamp.phone', '[main][DONNEES][IDENTITE][TEL]') }}
+
+          <dt>{{'plugins.zoco.entry.boamp.address'|trans}}</dt>
+          <dd>{{entry.get('[main][DONNEES][IDENTITE][ADRESSE]')}}</dd>
+          <dd>{{entry.get('[main][DONNEES][IDENTITE][CP]')}} {{entry.get('[main][DONNEES][IDENTITE][VILLE]')}}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+</div>
