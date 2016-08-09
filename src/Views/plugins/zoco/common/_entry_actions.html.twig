@@ -1,0 +1,6 @@
+<script type="text/javascript">
+  (function(config) {
+    config.pinEntryTemplateUrl = "{{ path('plugins_zoco_pin_entry', {"entryId":"__entryId__", "entryType":"__entryType__"}) }}";
+  }(this.__config__ = this.__config__ || {}));
+</script>
+{{ appendScript('plugins/zoco/js/entry-actions.js') }}

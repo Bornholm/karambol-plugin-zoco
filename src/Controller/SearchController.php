@@ -32,13 +32,25 @@ class SearchController extends Controller {
     $twig = $this->get('twig');
     $esClient = $this->get('zoco_elasticsearch_client');
 
-    $results = $esClient->search([
+    $params = [
       'index' => 'zoco',
       'body' => [
         'query' => [
-          'query_string' => [
+          'multi_match' => [
+            'fields' => [
+              '*.GESTION.REFERENCE.IDWEB',
+              '*.GESTION.INDEXATION.RESUME_OBJET',
+              '*.DONNEES.IDENTITE.*',
+              '*.DONNEES.OBJET.TITRE_MARCHE',
+              '*.DONNEES.OBJET.OBJET_COMPLET',
+              '*.DONNEES.OBJET.LOTS.LOT.INTITULE',
+              '*.DONNEES.OBJET.LOTS.LOT.DESCRIPTION',
+              '*.DONNEES.OBJET.LOTS.DESCRIPTION',
+              '*.DONNEES.OBJET.LOTS.INTITULE'
+            ],
             'query' => $search,
-            'default_operator' => 'AND'
+            'operator' => 'AND',
+            'type' => 'cross_fields'
           ]
         ],
         'from' => $offset,
@@ -46,9 +58,16 @@ class SearchController extends Controller {
         'sort' => [
           ['main.GESTION.INDEXATION.DATE_PUBLICATION' => 'desc'],
           ['main.GESTION.INDEXATION.DATE_LIMITE_REPONSE' => 'asc']
+        ],
+        'highlight' => [
+          'fields' => [
+            '*' => new \stdClass()
+          ]
         ]
       ]
-    ]);
+    ];
+
+    $results = $esClient->search($params);
 
     $total = $results['hits']['total'];
     $hits = $results['hits']['hits'];
@@ -60,7 +79,24 @@ class SearchController extends Controller {
       }
     }
 
+
+    $user = $this->get('user');
+    $orm = $this->get('orm');
+    $repo = $orm->getRepository('KarambolZocoPlugin\Entity\PinnedEntry');
+
+    foreach($entries as $entry) {
+      $qb = $repo->createQueryBuilder('p');
+      $qb->select('count(p.id)')->where($qb->expr()->andX(
+        $qb->expr()->eq('p.userId', $user->getId()),
+        $qb->expr()->eq('p.entryId', $qb->expr()->literal($entry->getId())),
+        $qb->expr()->eq('p.entryType', $qb->expr()->literal($entry->getType()))
+      ));
+      $count = $qb->getQuery()->getSingleScalarResult();
+      if($count > 0) $pins[$entry->getId()] = true;
+    }
+
     return $twig->render('plugins/zoco/search/results.html.twig', [
+      'pins' => $pins,
       'search' => $search,
       'results' => $entries,
       'total' => $total,

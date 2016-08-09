@@ -19,7 +19,8 @@ class ZocoPlugin extends Plugin {
     $this->registerEntities(__DIR__.'/Entity');
     $this->registerControllers([
       Controller\SearchController::class,
-      Controller\SearchEntryController::class
+      Controller\SearchEntryController::class,
+      Controller\PinboardController::class
     ]);
     $this->registerTranslation('fr', __DIR__.'/../i18n/fr.yml');
     $this->addSystemPages($app);
@@ -45,6 +46,7 @@ class ZocoPlugin extends Plugin {
   protected function addSystemPages($app) {
     $urlGen = $app['url_generator'];
     $this->registerSystemPage('plugins.zoco.search_page', $urlGen->generate('plugins_zoco_search'), 'zoco-search');
+    $this->registerSystemPage('plugins.zoco.pinboard_page', $urlGen->generate('plugins_zoco_pinboard'), 'zoco-pinboard');
   }
 
 }

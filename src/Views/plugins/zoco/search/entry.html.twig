@@ -1,5 +1,5 @@
 {% extends 'home/index.html.twig' %}
-{% import 'plugins/zoco/search/_entry_tags.html.twig' as entryTags %}
+{% import 'plugins/zoco/common/_entry_tags.html.twig' as entryTags %}
 
 {% block head_style %}
   {{ parent() }}
@@ -13,13 +13,18 @@
 {% block body_content %}
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-6">
-      <h2 class="search-entry-title">{{ entry.type|upper }}-{{ entry.id|upper }} <small>{{ entryTags.getTags(entry) }}</small></h2>
-    </div>
-    <div class="col-md-6 clearfix">
+    <div class="col-md-12 clearfix">
       <div class="btn-group pull-right" role="group">
-        <button disabled type="button" class="btn btn-primary"><i class="fa fa-thumb-tack"></i> {{ 'plugins.zoco.entry.pin'|trans }}</button>
+        <button type="button" class="btn btn-lg btn-{{ isPinned ? 'warning' : 'default' }}"
+          data-entry-action="{{ isPinned ? 'unpin' : 'pin' }}" data-entry-id="{{entry.id}}" data-entry-type="{{entry.type}}">
+          <i class="fa fa-thumb-tack"></i>
+        </button>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="search-entry-title">{{ entry.type|upper }}-{{ entry.id|upper }} <small>{{ entryTags.getTags(entry) }}</small></h2>
     </div>
   </div>
   <div class="row">
@@ -82,5 +87,6 @@
 
   </div>
   {% include 'plugins/zoco/search/_' ~ entry.type ~ '_entry.html.twig' ignore missing %}
+  {% include 'plugins/zoco/common/_entry_actions.html.twig' %}
 </div>
 {% endblock %}

@@ -39,8 +39,21 @@ class SearchEntryController extends Controller {
         throw new NotFoundHttpException();
     }
 
+    $user = $this->get('user');
+    $orm = $this->get('orm');
+    $repo = $orm->getRepository('KarambolZocoPlugin\Entity\PinnedEntry');
+
+    $qb = $repo->createQueryBuilder('p');
+    $qb->select('count(p.id)')->where($qb->expr()->andX(
+      $qb->expr()->eq('p.userId', $user->getId()),
+      $qb->expr()->eq('p.entryId', $qb->expr()->literal($entry->getId())),
+      $qb->expr()->eq('p.entryType', $qb->expr()->literal($entry->getType()))
+    ));
+    $isPinned = $qb->getQuery()->getSingleScalarResult() > 0;
+
     return $twig->render('plugins/zoco/search/entry.html.twig', [
-      'entry' => $entry
+      'entry' => $entry,
+      'isPinned' => $isPinned
     ]);
 
   }

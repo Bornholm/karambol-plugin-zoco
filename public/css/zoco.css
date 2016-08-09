@@ -15,3 +15,12 @@ h2.search-entry-title small {
   vertical-align: text-top;
   line-height: 30px;
 }
+
+
+[data-entry-action] > i.fa {
+  transition: 250ms linear;
+}
+
+[data-entry-action="unpin"] > i.fa {
+  transform: rotate(45deg);
+}

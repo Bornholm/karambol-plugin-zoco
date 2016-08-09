@@ -1,6 +1,10 @@
 plugins:
   zoco:
     search_page: Rechercher un marché
+    pinboard_page: Mes marchés
+    pinboard:
+      title: Mes marchés
+      no_entries: Pas de marché épinglé pour le moment.
     search:
       search_placeholder: "Exemple: logiciel libre"
       no_results: Aucun résultat. Veuillez modifier votre recherche.
