@@ -64,4 +64,10 @@ class BoampEntry implements SearchEntryInterface {
     return $accessor->getValue($this->source, $sourcePath);
   }
 
+  public function isPinned($userId) {
+    $pins = $this->get('[pins]');
+    if(!$pins) return false;
+    return in_array($userId, $pins);
+  }
+
 }

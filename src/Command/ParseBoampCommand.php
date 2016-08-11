@@ -19,7 +19,7 @@ class ParseBoampCommand extends BoampCommand
       ->setName('zoco-plugin:boamp:parse-xml')
       ->setDescription('Analyse les fichiers XML du BOAMP et les intégre à la base de connaissance de Zoco.')
       ->addOption('year', null, InputOption::VALUE_OPTIONAL, 'Année de publication des marchés à télécharger', date("Y"))
-      ->addOption('bulk-size', null, InputOption::VALUE_OPTIONAL, 'Nombre d\'éléments à traiter par lot', 1000)
+      ->addOption('bulk-size', null, InputOption::VALUE_OPTIONAL, 'Nombre d\'éléments à traiter par lot', 1500)
       ->addOption('newer-than', null, InputOption::VALUE_OPTIONAL, 'Extraire uniquement les archives créées/modifiées plus récemment que l\'espace de temps donné', null)
       ->addOption('stop-on-parse-error', null, InputOption::VALUE_NONE, 'Arreter le traitement en cas d\'erreur d\'analyse')
       ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Ne pas appliquer les changements')
@@ -106,28 +106,50 @@ class ParseBoampCommand extends BoampCommand
         ]
       ];
 
-      $doc = [];
-
       if(!$isModification) {
+        $doc = [];
         $doc['main'] = $body;
+        $bulk['body'][] = [
+          'doc' => $doc,
+          'doc_as_upsert' => true
+        ];
       } else {
-        $doc['modifications'] = [
-          $webId => $body
+        $bulk['body'][] = [
+          'script' => [
+            'inline' => 'if(!ctx._source.containsKey("modifications")) { ctx._source.modifications = [] }; ctx._source.modifications += m',
+            'params' => [
+              'm' => $body
+            ]
+          ],
+          'upsert' => [
+            'modifications' => [$body]
+          ]
         ];
       }
-
-      $bulk['body'][] = [
-        'doc' => $doc,
-        'doc_as_upsert' => true
-      ];
 
       $bulkItemsCount = count($bulk['body'])/2;
       $flush = $bulkItemsCount % $bulkSize === 0;
       if($flush) {
         $output->writeln(sprintf('<comment>Flushing bulk %s/%s...</comment>', $bulkIndex, $totalBulks));
-        if(!$dryRun) $client->bulk($bulk);
+        if(!$dryRun) $result = $client->bulk($bulk);
+
+        if($result && $result['errors'] === true) {
+          foreach($result['items'] as $item) {
+            $update = $item['update'];
+            if(isset($update['error'])) {
+              $error = $update['error'];
+              $output->writeln(sprintf(
+                '<error>Error while updating document "%s": %s</error>',
+                $update['_index'].'/'.$update['_type'].'/'.$update['_id'],
+                $error['reason']
+              ));
+            }
+          }
+        }
+
         $bulk = ['body' => []];
         $bulkIndex++;
+
       }
 
     }

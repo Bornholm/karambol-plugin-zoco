@@ -1,7 +1,7 @@
 plugins:
   zoco:
     search_page: Rechercher un marché
-    pinboard_page: Mes marchés
+    pinboard_page: Ma sélection
     pinboard:
       title: Mes marchés
       no_entries: Pas de marché épinglé pour le moment.

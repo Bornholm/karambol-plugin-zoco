@@ -19,41 +19,13 @@ class SearchEntryController extends Controller {
     $this->assertUrlAccessAuthorization();
 
     $twig = $this->get('twig');
-    $esClient = $this->get('zoco_elasticsearch_client');
-
-    $params = [
-      'index' => 'zoco',
-      'type' => $entryType,
-      'id' => $entryId
-    ];
-
-    $result = $esClient->get($params);
-
-    // dump($result);
-
-    switch($entryType) {
-      case 'boamp':
-        $entry = new BoampEntry($result['_source']);
-        break;
-      default:
-        throw new NotFoundHttpException();
-    }
-
+    $searchService = $this->get('zoco.search');
     $user = $this->get('user');
-    $orm = $this->get('orm');
-    $repo = $orm->getRepository('KarambolZocoPlugin\Entity\PinnedEntry');
 
-    $qb = $repo->createQueryBuilder('p');
-    $qb->select('count(p.id)')->where($qb->expr()->andX(
-      $qb->expr()->eq('p.userId', $user->getId()),
-      $qb->expr()->eq('p.entryId', $qb->expr()->literal($entry->getId())),
-      $qb->expr()->eq('p.entryType', $qb->expr()->literal($entry->getType()))
-    ));
-    $isPinned = $qb->getQuery()->getSingleScalarResult() > 0;
+    $result = $searchService->fetchEntry($entryType, $entryId);
 
     return $twig->render('plugins/zoco/search/entry.html.twig', [
-      'entry' => $entry,
-      'isPinned' => $isPinned
+      'entry' => $result['entry']
     ]);
 
   }

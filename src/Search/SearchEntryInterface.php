@@ -12,4 +12,6 @@ interface SearchEntryInterface {
   public function getClosingDate();
   public function getPublicationUrl();
 
+  public function isPinned($userId);
+
 }

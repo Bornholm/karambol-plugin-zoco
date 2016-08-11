@@ -30,11 +30,13 @@
               class="btn btn-primary">
               <i class="fa fa-eye"></i>
             </a>
-            {% set isPinned = pins[entry.id] is defined %}
+            {% if app.user is not empty %}
+            {% set isPinned = entry.isPinned(app.user.id) %}
             <button class="btn btn-{{ isPinned ? 'warning' : 'default' }}"
               data-entry-action="{{ isPinned ? 'unpin' : 'pin' }}" data-entry-id="{{entry.id}}" data-entry-type="{{entry.type}}">
               <i class="fa fa-thumb-tack"></i>
             </button>
+            {% endif %}
           </div>
         </td>
       </tr>

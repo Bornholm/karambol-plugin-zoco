@@ -35,10 +35,12 @@
                     <td>
                       <div class="btn-group" role="group" style="min-width:100px">
                         <a href="{{ path('plugins_zoco_search_entry', {'entryType': entry.type, 'entryId': entry.id}) }}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+                        {% if app.user is not empty %}
                         <a data-entry-action="unpin" data-entry-id="{{entry.id}}" data-entry-type="{{entry.type}}"
                           class="btn btn-warning">
                           <i class="fa fa-thumb-tack"></i>
                         </a>
+                        {% endif %}
                       </div>
                     </td>
                   </tr>

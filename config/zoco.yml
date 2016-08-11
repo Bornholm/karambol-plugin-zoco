@@ -20,20 +20,18 @@ plugins:
               analyzer:
                 default:
                   type: french
+            index:
+              mapping:
+                ignore_malformed: true
           mappings:
             boamp:
               dynamic_templates:
-                - modifications:
-                    path_match: "modifications.*-*"
-                    mapping:
-                      type: nested
-                      stored: true
-                - modification_txt_init:
-                    path_match: "*.DONNEES.RECTIF.MODIFICATION.TXT_INIT"
+                - DONNEES.RECTIF.MODIFICATION.LIRE:
+                    path_match: "*.DONNEES.RECTIF.MODIFICATION.LIRE"
                     mapping:
                       type: string
-                - modification_lire:
-                    path_match: "*.DONNEES.RECTIF.MODIFICATION.LIRE"
+                - DONNEES.RECTIF.MODIFICATION.TXT_INIT:
+                    path_match: "*.DONNEES.RECTIF.MODIFICATION.TXT_INIT"
                     mapping:
                       type: string
 

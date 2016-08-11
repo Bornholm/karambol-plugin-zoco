@@ -6,7 +6,7 @@ use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Elasticsearch\ClientBuilder;
 
-class ZocoElasticsearchClientProvider implements ServiceProviderInterface
+class ElasticsearchClientProvider implements ServiceProviderInterface
 {
 
   protected $clientConfig;
@@ -17,7 +17,7 @@ class ZocoElasticsearchClientProvider implements ServiceProviderInterface
 
   public function register(Application $app) {
     $config = $this->clientConfig;
-    $app['zoco_elasticsearch_client'] = ClientBuilder::create()
+    $app['zoco.elasticsearch_client'] = ClientBuilder::create()
       ->setHosts($config['hosts'])
       ->setLogger($app['logger'])
       ->build()

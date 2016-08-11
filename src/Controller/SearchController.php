@@ -30,10 +30,9 @@ class SearchController extends Controller {
   protected function handleSearch($search, $offset = 0, $limit = 50) {
 
     $twig = $this->get('twig');
-    $esClient = $this->get('zoco_elasticsearch_client');
+    $searchService = $this->get('zoco.search');
 
     $params = [
-      'index' => 'zoco',
       'body' => [
         'query' => [
           'multi_match' => [
@@ -53,6 +52,11 @@ class SearchController extends Controller {
             'type' => 'cross_fields'
           ]
         ],
+        'filter' => [
+          'and' => [
+            [ 'exists' => [ 'field' => 'main' ] ]
+          ]
+        ],
         'from' => $offset,
         'size' => $limit,
         'sort' => [
@@ -67,36 +71,12 @@ class SearchController extends Controller {
       ]
     ];
 
-    $results = $esClient->search($params);
+    $results = $searchService->search($params);
 
-    $total = $results['hits']['total'];
-    $hits = $results['hits']['hits'];
-
-    $entries = [];
-    foreach($hits as $hit) {
-      if($hit['_type'] === 'boamp') {
-        $entries[] = new Search\BoampEntry($hit['_source']);
-      }
-    }
-
-
-    $user = $this->get('user');
-    $orm = $this->get('orm');
-    $repo = $orm->getRepository('KarambolZocoPlugin\Entity\PinnedEntry');
-
-    foreach($entries as $entry) {
-      $qb = $repo->createQueryBuilder('p');
-      $qb->select('count(p.id)')->where($qb->expr()->andX(
-        $qb->expr()->eq('p.userId', $user->getId()),
-        $qb->expr()->eq('p.entryId', $qb->expr()->literal($entry->getId())),
-        $qb->expr()->eq('p.entryType', $qb->expr()->literal($entry->getType()))
-      ));
-      $count = $qb->getQuery()->getSingleScalarResult();
-      if($count > 0) $pins[$entry->getId()] = true;
-    }
+    $total = $results['raw']['hits']['total'];
+    $entries = $results['entries'];
 
     return $twig->render('plugins/zoco/search/results.html.twig', [
-      'pins' => $pins,
       'search' => $search,
       'results' => $entries,
       'total' => $total,

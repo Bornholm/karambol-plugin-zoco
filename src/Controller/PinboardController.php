@@ -31,16 +31,12 @@ class PinboardController extends Controller {
 
     $user = $this->get('user');
     $twig = $this->get('twig');
-    $orm = $this->get('orm');
+    $searchService = $this->get('zoco.search');
 
-    $pins = $orm->getRepository('KarambolZocoPlugin\Entity\PinnedEntry')->findAll([
-      'userId' => $user->getId()
-    ]);
-
-    $entries = count($pins) > 0 ? $this->getAssociatedEntries($pins) : [];
+    $result = $searchService->fetchPinnedEntries($user->getId());
 
     return $twig->render('plugins/zoco/pinboard/pinboard.html.twig', [
-      'entries' => $entries
+      'entries' => $result['entries']
     ]);
 
   }
@@ -52,22 +48,10 @@ class PinboardController extends Controller {
     $user = $this->get('user');
     $orm = $this->get('orm');
 
-    $pin = $orm->getRepository('KarambolZocoPlugin\Entity\PinnedEntry')->findOneBy([
-      'userId' => $user->getId(),
-      'entryType' => $entryType,
-      'entryId' => $entryId
-    ]);
+    $search = $this->get('zoco.search');
+    $user = $this->get('user');
 
-    if($pin) return new JsonResponse(['result' => 'OK']);
-
-    $pin = new PinnedEntry();
-
-    $pin->setUserId($user->getId());
-    $pin->setEntryType($entryType);
-    $pin->setEntryId($entryId);
-
-    $orm->persist($pin);
-    $orm->flush();
+    $search->pin($user->getId(), $entryType, $entryId);
 
     return new JsonResponse(['result' => 'OK']);
 
@@ -77,55 +61,12 @@ class PinboardController extends Controller {
 
     $this->assertUrlAccessAuthorization();
 
-    $orm = $this->get('orm');
+    $search = $this->get('zoco.search');
     $user = $this->get('user');
 
-    $pin = $orm->getRepository('KarambolZocoPlugin\Entity\PinnedEntry')->findOneBy([
-      'userId' => $user->getId(),
-      'entryType' => $entryType,
-      'entryId' => $entryId
-    ]);
-
-    if($pin) {
-      $orm->remove($pin);
-      $orm->flush();
-    }
+    $search->unpin($user->getId(), $entryType, $entryId);
 
     return new JsonResponse(['result' => 'OK']);
-
-  }
-
-
-  protected function getAssociatedEntries(array $pins) {
-
-    $esClient = $this->get('zoco_elasticsearch_client');
-
-    $params = [
-      'index' => 'zoco',
-      'body' => [
-        'docs' => []
-      ]
-    ];
-
-    foreach($pins as $pin) {
-      $params['body']['docs'][] = [
-        '_type' => $pin->getEntryType(),
-        '_id' => $pin->getEntryId()
-      ];
-    }
-
-    $results = $esClient->mget($params);
-
-    $entries = [];
-    foreach($results['docs'] as $doc) {
-      switch($doc['_type']) {
-        case 'boamp':
-          $entries[] = new BoampEntry($doc['_source']);
-          break;
-      }
-    }
-
-    return $entries;
 
   }
 

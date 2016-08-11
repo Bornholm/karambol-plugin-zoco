@@ -5,7 +5,8 @@ namespace KarambolZocoPlugin;
 use Karambol\KarambolApp;
 use Karambol\Plugin\Plugin;
 use KarambolZocoPlugin\Command as Command;
-use KarambolZocoPlugin\Provider\ZocoElasticsearchClientProvider;
+use KarambolZocoPlugin\Provider\ElasticsearchClientProvider;
+use KarambolZocoPlugin\Provider\SearchProvider;
 use KarambolZocoPlugin\Controller as Controller;
 use KarambolZocoPlugin\Controller\SearchController;
 
@@ -16,7 +17,6 @@ class ZocoPlugin extends Plugin {
     parent::boot($app, $options);
 
     $this->registerViews(__DIR__.'/Views');
-    $this->registerEntities(__DIR__.'/Entity');
     $this->registerControllers([
       Controller\SearchController::class,
       Controller\SearchEntryController::class,
@@ -40,7 +40,8 @@ class ZocoPlugin extends Plugin {
 
   protected function addServices(KarambolApp $app, array $options) {
     $elasticsearchOptions = $options['elasticsearch'];
-    $app->register(new ZocoElasticsearchClientProvider($elasticsearchOptions));
+    $app->register(new ElasticsearchClientProvider($elasticsearchOptions));
+    $app->register(new SearchProvider($elasticsearchOptions));
   }
 
   protected function addSystemPages($app) {
