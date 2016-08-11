@@ -29,7 +29,7 @@ class ParseBoampCommand extends BoampCommand
   protected function execute(InputInterface $input, OutputInterface $output)
   {
 
-    $client = $this->app['zoco_elasticsearch_client'];
+    $client = $this->app['zoco.elasticsearch_client'];
     $baseDestDir = $this->getDataDirectory();
     $remoteDir = $this->getRemoteDir($input->getOption('year'));
     $stopOnParseError = $input->getOption('stop-on-parse-error') === 'true';

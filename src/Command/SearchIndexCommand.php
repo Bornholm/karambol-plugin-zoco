@@ -37,7 +37,7 @@ class SearchIndexCommand extends Command
     $search = $input->getArgument('search');
     $limit = $input->getOption('limit');
 
-    $client = $this->app['zoco_elasticsearch_client'];
+    $client = $this->app['zoco.elasticsearch_client'];
 
     $searchParams = [
       'index' => $indexName,

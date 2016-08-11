@@ -35,7 +35,7 @@ class CreateIndexCommand extends Command
     $indexMappings = $indexOptions['mappings'];
     $indexSettings = $indexOptions['settings'];
 
-    $client = $this->app['zoco_elasticsearch_client'];
+    $client = $this->app['zoco.elasticsearch_client'];
 
     $indicesSettings = $client->indices()->getSettings();
 
