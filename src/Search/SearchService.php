@@ -65,7 +65,7 @@ class SearchService {
       }
     }
 
-    return ['raw' => $result, 'entries' => $entries];
+    return ['raw' => $results, 'entries' => $entries];
 
   }
 
