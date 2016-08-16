@@ -8,14 +8,14 @@ plugins:
     search:
       search_placeholder: "Exemple: logiciel libre"
       no_results: Aucun résultat. Veuillez modifier votre recherche.
-      entry_id: Identifiant
-      entry_title: Intitulé
-      entry_publication_date: Date de publication
-      entry_closing_date: Date de clôture
+      tender_id: Identifiant
+      tender_title: Intitulé
+      tender_publication_date: Date de publication
+      tender_closing_date: Date de clôture
       actions: Actions
       total_results: Résultats
       tags: Tags
-    entry:
+    tender:
       title: Intitulé
       description: Description
       calendar: Calendrier de participation

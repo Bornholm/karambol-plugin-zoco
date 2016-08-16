@@ -1,0 +1,94 @@
+{% extends 'home/index.html.twig' %}
+{% import 'plugins/zoco/common/_tender_tags.html.twig' as tenderTags %}
+
+{% block head_style %}
+  {{ parent() }}
+  <link href="{{ asset("plugins/zoco/css/zoco.css") }}" rel="stylesheet" />
+{% endblock %}
+
+{% block head_title %}
+  <title>{{ tender.type|upper }}-{{ tender.id|upper }} - Zoco</title>
+{% endblock %}
+
+{% block body_content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 clearfix">
+      <div class="btn-group pull-right" role="group">
+        {% if app.user is not empty %}
+        <button type="button" class="btn btn-lg btn-{{ hasPin ? 'warning' : 'default' }}"
+          data-tender-action="{{ hasPin ? 'unpin' : 'pin' }}" data-tender-id="{{tender.id}}" data-tender-type="{{tender.type}}">
+          <i class="fa fa-thumb-tack"></i>
+        </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="search-tender-title">{{ tender.type|upper }}-{{ tender.id|upper }} <small>{{ tenderTags.getTags(tender) }}</small></h2>
+    </div>
+  </div>
+  <div class="row">
+
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+          <h2 class="panel-title pull-left"><i class="fa fa-info-circle"></i> {{ 'plugins.zoco.tender.informations'|trans }}</h2>
+        </div>
+        <div class="panel-body">
+          <dl>
+            <dt>{{'plugins.zoco.tender.title'|trans}}</dt>
+            <dd>{{tender.title}}</dd>
+            {% if tender.description != tender.title %}
+              <dt>{{'plugins.zoco.tender.description'|trans}}</dt>
+              <dd>{{tender.description}}</dd>
+            {% endif %}
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h2 class="panel-title"><i class="fa fa-external-link"></i> {{ 'plugins.zoco.tender.publication_platform'|trans }}</h2></div>
+            <div class="panel-body">
+              <dl class="dl-horizontal">
+                <dt>{{'plugins.zoco.tender.publication_url'|trans}}</dt>
+                <dd>
+                  {% if tender.publicationUrl is not empty %}
+                    <a href="{{ tender.publicationUrl }}" target="_blank">{{ tender.publicationUrl|length > 70 ? tender.publicationUrl|slice(0,70) ~ '...' : tender.publicationUrl }}</a>
+                  {% else %}
+                    <em>--</em>
+                  {% endif %}
+                  <button disabled class="btn btn-xs btn-default"><i class="fa fa-edit"></i></button>
+                </dd>
+                <dd><small><em>{{ 'plugins.zoco.tender.fix_publication_url'|trans }}</em></small></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h2 class="panel-title"><i class="fa fa-calendar"></i> {{ 'plugins.zoco.tender.calendar'|trans }}</h2></div>
+            <div class="panel-body">
+              <dl class="dl-horizontal">
+                <dt>{{'plugins.zoco.tender.publication_date'|trans}}</dt>
+                <dd>{{tender.publicationDate|date('d/m/Y')}}</dd>
+                <dt>{{'plugins.zoco.tender.closing_date'|trans}}</dt>
+                <dd>{{tender.closingDate|date('d/m/Y H:i:s')}}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% include 'plugins/zoco/tender/_' ~ tender.type ~ '_tender.html.twig' ignore missing %}
+  {% include 'plugins/zoco/common/_tender_actions.html.twig' %}
+</div>
+{% endblock %}

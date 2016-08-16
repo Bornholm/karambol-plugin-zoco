@@ -34,7 +34,6 @@ plugins:
                     path_match: "*.DONNEES.RECTIF.MODIFICATION.TXT_INIT"
                     mapping:
                       type: string
-
 assets:
   zoco-plugin:
     - { src: vendor/bornholm/karambol-plugin-zoco/public/css, dest: public/plugins/zoco/css }

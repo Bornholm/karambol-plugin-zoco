@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Karambol\KarambolApp;
 use Symfony\Component\Console\Command\Command;
 
-class CreateIndexCommand extends Command
+class UpdateIndexMappingsCommand extends Command
 {
 
   protected $app;
@@ -23,8 +23,8 @@ class CreateIndexCommand extends Command
 
   protected function configure() {
     $this
-      ->setName('zoco-plugin:index:create')
-      ->setDescription('Initialise l\'index pour le moteur de recherche des marchés')
+      ->setName('zoco-plugin:index:update-mappings')
+      ->setDescription('Mettre à jour les mappings de l\'index.')
     ;
   }
 
@@ -33,32 +33,28 @@ class CreateIndexCommand extends Command
     $indexOptions = $this->indexOptions;
     $indexName = $indexOptions['name'];
     $indexMappings = $indexOptions['mappings'];
-    $indexSettings = $indexOptions['settings'];
 
     $client = $this->app['zoco.elasticsearch']->getClient();
 
     $indicesSettings = $client->indices()->getSettings();
 
     // Suppression de l'index au cas où celui ci existerait
-    if(isset($indicesSettings[$indexName])) {
-      $output->writeln(sprintf('<comment>The index "%s" already exists. Deleting...</comment>', $indexName));
-      $res = $client->indices()->delete(['index' => $indexName]);
-      if(!$res || !isset($res['acknowledged']) || $res['acknowledged'] !== true) {
-        $output->writeln(sprintf('<error>An error occured while deleting the "%s" index !</error>', $indexName));
-        return 1;
-      }
+    if(!isset($indicesSettings[$indexName])) {
+      $output->writeln(sprintf('<comment>The index "%s" does not exists.</comment>', $indexName));
+      return 1;
     }
 
-    $indexCreationParams = [
-      'index' => $indexName,
-      'body' => []
-    ];
-
-    if($indexMappings) $indexCreationParams['body']['mappings'] = $indexMappings;
-    if($indexSettings) $indexCreationParams['body']['settings'] = $indexSettings;
-
-    $output->writeln(sprintf('<info>Creating index "%s"...</info>', $indexName));
-    $res = $client->indices()->create($indexCreationParams);
+    foreach($indexMappings as $documentType => $mapping) {
+      $indexParams = [
+        'index' => $indexName,
+        'type' => $documentType,
+        'body' => [
+          $documentType => $mapping
+        ]
+      ];
+      $output->writeln(sprintf('<info>Updating "%s/%s" mappings...</info>', $indexName, $documentType));
+      $res = $client->indices()->putMapping($indexParams);
+    }
 
     $output->writeln('<info>Done.</info>');
     return 0;

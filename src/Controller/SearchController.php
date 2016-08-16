@@ -30,7 +30,7 @@ class SearchController extends Controller {
   protected function handleSearch($search, $offset = 0, $limit = 50) {
 
     $twig = $this->get('twig');
-    $searchService = $this->get('zoco.search');
+    $esService = $this->get('zoco.elasticsearch');
 
     $params = [
       'body' => [
@@ -70,17 +70,18 @@ class SearchController extends Controller {
       $params['body']['query'] = $query;
     }
 
-    $results = $searchService->search($params);
+    $results = $esService->query($params);
 
-    $total = $results['raw']['hits']['total'];
-    $entries = $results['entries'];
+    $user = $this->get('user');
+    $pins = $this->get('zoco.tender_pin')->havePins($user, $results->getDocuments());
 
     return $twig->render('plugins/zoco/search/results.html.twig', [
       'search' => $search,
-      'results' => $entries,
-      'total' => $total,
+      'results' => $results->getDocuments(),
+      'total' => $results->getTotal(),
       'offset' => $offset,
-      'limit' => $limit
+      'limit' => $limit,
+      'pins' => $pins
     ]);
 
   }

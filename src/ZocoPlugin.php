@@ -5,8 +5,7 @@ namespace KarambolZocoPlugin;
 use Karambol\KarambolApp;
 use Karambol\Plugin\Plugin;
 use KarambolZocoPlugin\Command as Command;
-use KarambolZocoPlugin\Provider\ElasticsearchClientProvider;
-use KarambolZocoPlugin\Provider\SearchProvider;
+use KarambolZocoPlugin\Provider as Provider;
 use KarambolZocoPlugin\Controller as Controller;
 use KarambolZocoPlugin\Controller\SearchController;
 
@@ -17,9 +16,10 @@ class ZocoPlugin extends Plugin {
     parent::boot($app, $options);
 
     $this->registerViews(__DIR__.'/Views');
+    $this->registerEntities(__DIR__.'/Entity');
     $this->registerControllers([
       Controller\SearchController::class,
-      Controller\SearchEntryController::class,
+      Controller\TenderController::class,
       Controller\PinboardController::class
     ]);
     $this->registerTranslation('fr', __DIR__.'/../i18n/fr.yml');
@@ -36,12 +36,13 @@ class ZocoPlugin extends Plugin {
     $app['console']->add(new Command\ParseBoampCommand($app, $boampOptions));
     $app['console']->add(new Command\CreateIndexCommand($app, $options['elasticsearch']['index']));
     $app['console']->add(new Command\SearchIndexCommand($app, $options['elasticsearch']['index']));
+    $app['console']->add(new Command\UpdateIndexMappingsCommand($app, $options['elasticsearch']['index']));
   }
 
   protected function addServices(KarambolApp $app, array $options) {
     $elasticsearchOptions = $options['elasticsearch'];
-    $app->register(new ElasticsearchClientProvider($elasticsearchOptions));
-    $app->register(new SearchProvider($elasticsearchOptions));
+    $app->register(new Provider\ElasticsearchProvider($elasticsearchOptions, $app['logger']));
+    $app->register(new Provider\TenderPinServiceProvider());
   }
 
   protected function addSystemPages($app) {

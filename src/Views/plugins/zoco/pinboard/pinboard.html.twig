@@ -1,5 +1,5 @@
 {% extends 'home/index.html.twig' %}
-{% import 'plugins/zoco/common/_entry_tags.html.twig' as entryTags %}
+{% import 'plugins/zoco/common/_tender_tags.html.twig' as tenderTags %}
 
 {% block head_style %}
   {{ parent() }}
@@ -16,27 +16,27 @@
             <table class="table table-condensed">
               <thead>
                 <tr>
-                  <th>{{ 'plugins.zoco.search.entry_id'|trans() }}</th>
-                  <th>{{ 'plugins.zoco.search.entry_title'|trans() }}</th>
+                  <th>{{ 'plugins.zoco.search.tender_id'|trans() }}</th>
+                  <th>{{ 'plugins.zoco.search.tender_title'|trans() }}</th>
                   <th>{{ 'plugins.zoco.search.tags'|trans() }}</th>
-                  <th>{{ 'plugins.zoco.search.entry_publication_date'|trans() }}</th>
-                  <th>{{ 'plugins.zoco.search.entry_closing_date'|trans() }}</th>
+                  <th>{{ 'plugins.zoco.search.tender_publication_date'|trans() }}</th>
+                  <th>{{ 'plugins.zoco.search.tender_closing_date'|trans() }}</th>
                   <th>{{ 'plugins.zoco.search.actions'|trans() }}</th>
                 </tr>
               </thead>
               <tbody>
-                {% for entry in entries %}
+                {% for tender in tenders %}
                   <tr>
-                    <td><span style="white-space:nowrap;">{{ entry.type|upper }}-{{entry.id}}</span></td>
-                    <td>{{ entry.title|capitalize }}</td>
-                    <td>{{ entryTags.getTags(entry) }}</td>
-                    <td>{{ entry.publicationDate|date('d/m/Y') }}</td>
-                    <td>{{ entry.closingDate|date('d/m/Y H:i:s') }}</td>
+                    <td><span style="white-space:nowrap;">{{ tender.type|upper }}-{{tender.id}}</span></td>
+                    <td>{{ tender.title|capitalize }}</td>
+                    <td>{{ tenderTags.getTags(tender) }}</td>
+                    <td>{{ tender.publicationDate|date('d/m/Y') }}</td>
+                    <td>{{ tender.closingDate|date('d/m/Y H:i:s') }}</td>
                     <td>
                       <div class="btn-group" role="group" style="min-width:100px">
-                        <a href="{{ path('plugins_zoco_search_entry', {'entryType': entry.type, 'entryId': entry.id}) }}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+                        <a href="{{ path('plugins_zoco_tender', {'tenderType': tender.type, 'tenderId': tender.id}) }}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
                         {% if app.user is not empty %}
-                        <a data-entry-action="unpin" data-entry-id="{{entry.id}}" data-entry-type="{{entry.type}}"
+                        <a data-tender-action="unpin" data-tender-id="{{tender.id}}" data-tender-type="{{tender.type}}"
                           class="btn btn-warning">
                           <i class="fa fa-thumb-tack"></i>
                         </a>
@@ -60,5 +60,5 @@
       </div>
     </div>
   </div>
-  {% include 'plugins/zoco/common/_entry_actions.html.twig' %}
+  {% include 'plugins/zoco/common/_tender_actions.html.twig' %}
 {% endblock %}

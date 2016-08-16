@@ -1,13 +1,11 @@
 <?php
 
-namespace KarambolZocoPlugin\Search;
+namespace KarambolZocoPlugin\Elasticsearch\Tender;
 
-interface SearchEntryInterface {
+interface TenderInterface {
 
   public function getTitle();
   public function getDescription();
-  public function getType();
-  public function getId();
   public function getPublicationDate();
   public function getClosingDate();
   public function getPublicationUrl();

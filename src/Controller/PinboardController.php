@@ -13,15 +13,15 @@ class PinboardController extends Controller {
 
   public function mount(KarambolApp $app) {
     $app->get('/zoco/pinboard', [$this, 'showPinboard'])->bind('plugins_zoco_pinboard');
-    $app->post('/zoco/{entryType}/{entryId}/pin', [$this, 'pinEntry'])
-      ->value('entryId', '/[a-z0-9\-]+/i')
-      ->value('entryType', '/[a-z0-9\-]+/i')
-      ->bind('plugins_zoco_pin_entry')
+    $app->post('/zoco/{tenderType}/{tenderId}/pin', [$this, 'pinEntry'])
+      ->value('tenderId', '/[a-z0-9\-]+/i')
+      ->value('tenderType', '/[a-z0-9\-]+/i')
+      ->bind('plugins_zoco_pin_tender')
     ;
-    $app->delete('/zoco/{entryType}/{entryId}/pin', [$this, 'unpinEntry'])
-      ->value('entryId', '/[a-z0-9\-]+/i')
-      ->value('entryType', '/[a-z0-9\-]+/i')
-      ->bind('plugins_zoco_unpin_entry')
+    $app->delete('/zoco/{tenderType}/{tenderId}/pin', [$this, 'unpinEntry'])
+      ->value('tenderId', '/[a-z0-9\-]+/i')
+      ->value('tenderType', '/[a-z0-9\-]+/i')
+      ->bind('plugins_zoco_unpin_tender')
     ;
   }
 
@@ -31,40 +31,65 @@ class PinboardController extends Controller {
 
     $user = $this->get('user');
     $twig = $this->get('twig');
-    $searchService = $this->get('zoco.search');
+    $es = $this->get('zoco.elasticsearch');
 
-    $result = $searchService->fetchPinnedEntries($user->getId());
+    $tenders = [];
+    $pins = $this->get('zoco.tender_pin')->getUserPins($user);
+
+    if(count($pins) > 0) {
+
+      $esClient = $es->getClient();
+      $params = [ 'body' => [ 'docs' => [] ] ];
+
+      foreach($pins as $pin) {
+        $params['body']['docs'][] = [
+          '_index' => 'zoco',
+          '_type' => $pin->getTenderType(),
+          '_id' => $pin->getTenderId()
+        ];
+      }
+
+      $results = $esClient->mget($params);
+
+      foreach($results['docs'] as $hit) {
+        $tenders[] = $es->createDocumentFromHit($hit);
+      }
+
+    }
 
     return $twig->render('plugins/zoco/pinboard/pinboard.html.twig', [
-      'entries' => $result['entries']
+      'tenders' => $tenders
     ]);
 
   }
 
-  public function pinEntry($entryType, $entryId) {
+  public function pinEntry($tenderType, $tenderId) {
 
     $this->assertUrlAccessAuthorization();
 
     $user = $this->get('user');
     $orm = $this->get('orm');
 
-    $search = $this->get('zoco.search');
+    $search = $this->get('zoco.tender_pin');
     $user = $this->get('user');
 
-    $search->pin($user->getId(), $entryType, $entryId);
+    $this->get('zoco.tender_pin')
+      ->pin($user, ['type' => $tenderType, 'id' => $tenderId])
+    ;
 
     return new JsonResponse(['result' => 'OK']);
 
   }
 
-  public function unpinEntry($entryType, $entryId) {
+  public function unpinEntry($tenderType, $tenderId) {
 
     $this->assertUrlAccessAuthorization();
 
-    $search = $this->get('zoco.search');
     $user = $this->get('user');
 
-    $search->unpin($user->getId(), $entryType, $entryId);
+    $this->get('zoco.tender_pin')
+      ->unpin($user, ['type' => $tenderType, 'id' => $tenderId])
+    ;
 
     return new JsonResponse(['result' => 'OK']);
 

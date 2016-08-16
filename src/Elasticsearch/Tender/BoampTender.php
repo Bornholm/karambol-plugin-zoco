@@ -1,16 +1,10 @@
 <?php
 
-namespace KarambolZocoPlugin\Search;
+namespace KarambolZocoPlugin\Elasticsearch\Tender;
 
-use Symfony\Component\PropertyAccess\PropertyAccess;
+use KarambolZocoPlugin\Elasticsearch\Document;
 
-class BoampEntry implements SearchEntryInterface {
-
-  protected $source = null;
-
-  public function __construct($source) {
-    $this->source = $source;
-  }
+class BoampTender extends Document implements TenderInterface  {
 
   public function getId() {
     return $this->get('[main][GESTION][REFERENCE][IDWEB]');
@@ -56,12 +50,6 @@ class BoampEntry implements SearchEntryInterface {
     $lots = $this->get('[main][DONNEES][OBJET][LOTS][LOT]');
     if(isset($lots['NUM'])) return [$lots];
     return $lots;
-  }
-
-  public function get($sourcePath) {
-    $accessor = PropertyAccess::createPropertyAccessor();
-    if(!$accessor->isReadable($this->source, $sourcePath)) return null;
-    return $accessor->getValue($this->source, $sourcePath);
   }
 
   public function isPinned($userId) {

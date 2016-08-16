@@ -1,22 +1,22 @@
 (function(config) {
 
-  if(!config || !config.pinEntryTemplateUrl) {
+  if(!config || !config.pinTenderTemplateUrl) {
     throw new Error('The config object is not correctly initialized !');
   }
 
   var actionSelectors = {
-    pin: '[data-entry-type][data-entry-id][data-entry-action=pin]',
-    unpin: '[data-entry-type][data-entry-id][data-entry-action=unpin]'
+    pin: '[data-tender-type][data-tender-id][data-tender-action=pin]',
+    unpin: '[data-tender-type][data-tender-id][data-tender-action=unpin]'
   };
 
   $(document.body).on('click', actionSelectors.pin, function(evt) {
 
     var $el = $(this);
-    var entryType = $el.data('entryType');
-    var entryId = $el.data('entryId');
-    var actionUrl = config.pinEntryTemplateUrl
-      .replace('__entryId__', entryId)
-      .replace('__entryType__', entryType)
+    var tenderType = $el.data('tenderType');
+    var tenderId = $el.data('tenderId');
+    var actionUrl = config.pinTenderTemplateUrl
+      .replace('__tenderId__', tenderId)
+      .replace('__tenderType__', tenderType)
     ;
 
     $.ajax({
@@ -25,8 +25,8 @@
       })
       .then(function(res) {
         if(!res || res.result !== 'OK') throw new Error('Invalid AJAX response from server.');
-        $el.data('entryAction', 'unpin')
-          .attr('data-entry-action', 'unpin')
+        $el.data('tenderAction', 'unpin')
+          .attr('data-tender-action', 'unpin')
           .removeClass('btn-primary', 'btn-default')
           .addClass('btn-warning')
         ;
@@ -39,11 +39,11 @@
   $(document.body).on('click', actionSelectors.unpin, function(evt) {
 
     var $el = $(this);
-    var entryType = $el.data('entryType');
-    var entryId = $el.data('entryId');
-    var actionUrl = config.pinEntryTemplateUrl
-      .replace('__entryId__', entryId)
-      .replace('__entryType__', entryType)
+    var tenderType = $el.data('tenderType');
+    var tenderId = $el.data('tenderId');
+    var actionUrl = config.pinTenderTemplateUrl
+      .replace('__tenderId__', tenderId)
+      .replace('__tenderType__', tenderType)
     ;
 
     $.ajax({
@@ -52,8 +52,8 @@
       })
       .then(function(res) {
         if(!res || res.result !== 'OK') throw new Error('Invalid AJAX response from server.');
-        $el.data('entryAction', 'pin')
-          .attr('data-entry-action', 'pin')
+        $el.data('tenderAction', 'pin')
+          .attr('data-tender-action', 'pin')
           .removeClass('btn-warning')
           .addClass('btn-default')
         ;
