@@ -16,6 +16,7 @@ plugins:
       actions: Actions
       total_results: Résultats
       tags: Tags
+      advanced_search: Recherche avancée
     tender:
       title: Intitulé
       description: Description
