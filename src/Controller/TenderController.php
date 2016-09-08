@@ -23,7 +23,7 @@ class TenderController extends Controller {
     ;
 
     $user = $this->get('user');
-    $hasPin = $this->get('zoco.tender_pin')->hasPin($user, $tender);
+    $hasPin = $user ? $this->get('zoco.tender_pin')->hasPin($user, $tender): false;
 
     return $this->get('twig')
       ->render('plugins/zoco/tender/tender.html.twig', [

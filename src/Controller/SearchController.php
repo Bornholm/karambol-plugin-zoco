@@ -73,7 +73,7 @@ class SearchController extends Controller {
     $results = $esService->query($params);
 
     $user = $this->get('user');
-    $pins = $this->get('zoco.tender_pin')->havePins($user, $results->getDocuments());
+    $pins = $user !== null ? $this->get('zoco.tender_pin')->havePins($user, $results->getDocuments()) : [];
 
     return $twig->render('plugins/zoco/search/results.html.twig', [
       'search' => $search,
