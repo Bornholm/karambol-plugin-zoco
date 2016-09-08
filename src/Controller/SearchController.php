@@ -10,6 +10,11 @@ class SearchController extends Controller {
 
   public function mount(KarambolApp $app) {
     $app->get('/zoco/search', [$this, 'showSearchIndex'])->bind('plugins_zoco_search');
+    $app->get('/zoco/search/advanced', [$this, 'showAdvancedSearchForm'])->bind('plugins_zoco_advanced_search');
+  }
+
+  public function showAdvancedSearchForm() {
+    return $this->render('plugins/zoco/search/advanced.html.twig');
   }
 
   public function showSearchIndex() {
