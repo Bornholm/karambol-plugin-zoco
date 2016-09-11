@@ -6,7 +6,7 @@ use KarambolZocoPlugin;
 use Doctrine\ORM\EntityManagerInterface;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Karambol\Account\UserInterface;
+use Karambol\Entity\User;
 use KarambolZocoPlugin\Elasticsearch\DocumentInterface;
 use KarambolZocoPlugin\Entity\TenderPin;
 
@@ -36,7 +36,7 @@ class TenderPinService {
     $this->em = $em;
   }
 
-  public function pin(UserInterface $user, $tender) {
+  public function pin(User $user, $tender) {
 
     if($this->hasPin($user, $tender)) return $this;
 
@@ -54,7 +54,7 @@ class TenderPinService {
 
   }
 
-  public function unpin(UserInterface $user, $tender) {
+  public function unpin(User $user, $tender) {
 
     if(!$this->hasPin($user, $tender)) return true;
 
@@ -79,7 +79,7 @@ class TenderPinService {
     ;
   }
 
-  public function hasPin(UserInterface $user, $tender) {
+  public function hasPin(User $user, $tender) {
 
     $identity = $this->getTenderIdentity($tender);
 
@@ -96,7 +96,7 @@ class TenderPinService {
 
   }
 
-  public function havePins(UserInterface $user, array $tenders) {
+  public function havePins(User $user, array $tenders) {
 
     $map = [];
     $pins = $this->em->getRepository(TenderPin::class)->findBy([
