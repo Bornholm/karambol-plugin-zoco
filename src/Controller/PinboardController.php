@@ -27,8 +27,6 @@ class PinboardController extends Controller {
 
   public function showPinboard() {
 
-    $this->assertUrlAccessAuthorization();
-
     $user = $this->get('user');
     $twig = $this->get('twig');
     $es = $this->get('zoco.elasticsearch');
@@ -65,8 +63,6 @@ class PinboardController extends Controller {
 
   public function pinEntry($tenderType, $tenderId) {
 
-    $this->assertUrlAccessAuthorization();
-
     $user = $this->get('user');
     $orm = $this->get('orm');
 
@@ -82,8 +78,6 @@ class PinboardController extends Controller {
   }
 
   public function unpinEntry($tenderType, $tenderId) {
-
-    $this->assertUrlAccessAuthorization();
 
     $user = $this->get('user');
 

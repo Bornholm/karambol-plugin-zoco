@@ -16,8 +16,6 @@ class TenderController extends Controller {
 
   public function showSearchEntry($tenderType, $tenderId) {
 
-    $this->assertUrlAccessAuthorization();
-
     $tender = $this->get('zoco.elasticsearch')
       ->get('zoco', $tenderType, $tenderId)
     ;
