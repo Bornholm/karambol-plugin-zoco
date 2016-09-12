@@ -5,6 +5,7 @@ namespace KarambolZocoPlugin\Controller;
 use Karambol\Controller\Controller;
 use Karambol\KarambolApp;
 use KarambolZocoPlugin\Search as Search;
+use KarambolZocoPlugin\Entity\ZocoUserExtension;
 
 class SearchController extends Controller {
 

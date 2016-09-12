@@ -29,7 +29,7 @@ class TenderPin {
   protected $tenderType;
 
   /**
-   * @ORM\ManyToOne(targetEntity="Karambol\Account\UserInterface")
+   * @ORM\ManyToOne(targetEntity="Karambol\Entity\User")
    * @ORM\JoinColumn(name="user", referencedColumnName="id", onDelete="CASCADE", nullable=false)
    */
   protected $user;
@@ -39,7 +39,7 @@ class TenderPin {
   }
 
   /**
-   * @return Karambol\Account\UserInterface
+   * @return Karambol\Entity\User
    */
   public function getUser()
   {

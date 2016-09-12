@@ -8,6 +8,7 @@ use KarambolZocoPlugin\Command as Command;
 use KarambolZocoPlugin\Provider as Provider;
 use KarambolZocoPlugin\Controller as Controller;
 use KarambolZocoPlugin\Controller\SearchController;
+use KarambolZocoPlugin\Entity\ZocoUser;
 
 class ZocoPlugin extends Plugin {
 
