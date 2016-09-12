@@ -9,7 +9,7 @@
 {% block body_content %}
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-8">
         <h2>Mes groupes de travail</h2>
         <div class="table-responsive">
           <div class="table-responsive">
@@ -17,12 +17,20 @@
               <thead>
                 <tr>
                   <th>Nom</th>
+                  <th>Propriétaire</th>
                 </tr>
               </thead>
               <tbody>
                 {% for workgroup in workgroups %}
                   <tr>
                     <td>{{workgroup.name}}</td>
+                    <td>
+                      {% if workgroup.user.user.username == app.user.username %}
+                        Vous
+                      {% else %}
+                        {{workgroup.user.user.username}}
+                      {% endif %}
+                    </td>
                   </tr>
                 {% else %}
                   <tr>
@@ -37,6 +45,9 @@
             </table>
           </div>
         </div>
+      </div>
+      <div class="col-md-4">
+        <h2>Créer un groupe de travail</h2>
       </div>
     </div>
   </div>

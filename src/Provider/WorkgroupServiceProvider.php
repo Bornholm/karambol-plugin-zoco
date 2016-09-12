@@ -6,9 +6,10 @@ use KarambolZocoPlugin;
 use Doctrine\ORM\EntityManagerInterface;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Karambol\Account\UserInterface;
+use Karambol\Entity\User;
 use KarambolZocoPlugin\Elasticsearch\DocumentInterface;
 use KarambolZocoPlugin\Entity\Workgroup;
+use KarambolZocoPlugin\Entity\ZocoUserExtension;
 
 class WorkgroupServiceProvider implements ServiceProviderInterface
 {
@@ -36,9 +37,9 @@ class WorkgroupService {
     $this->em = $em;
   }
 
-  public function getOwnsGroup(UserInterface $user)
+  public function getOwnsGroup(ZocoUserExtension $user)
   {
-    return $this->em->getRepository(Workgroup::class)->findBy(['user_id' =>$user->getId()]);
+    return $this->em->getRepository(ZocoUserExtension::class)->findBy(['zocouserextension_id' =>$user->getId()]);
   }
 
 }

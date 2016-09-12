@@ -3,7 +3,7 @@
 namespace KarambolZocoPlugin\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Karambol\Account\UserInterface;
+use Karambol\Entity\User;
 
 /**
  * @ORM\Entity
@@ -19,10 +19,10 @@ class Workgroup {
   protected $id;
 
   /**
-   * @ORM\ManyToOne(targetEntity="Karambol\Account\UserInterface")
-   * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
+   * @ORM\ManyToOne(targetEntity="KarambolZocoPlugin\Entity\ZocoUserExtension")
+   * @ORM\JoinColumn(name="user", referencedColumnName="id", onDelete="CASCADE", nullable=false)
    */
-  protected $userID;
+  protected $user;
 
   /**
    * @ORM\Column(type="string", length=64, nullable=false)
@@ -35,32 +35,31 @@ class Workgroup {
   protected $slug;
 
   /**
-   * @ORM\ManyToMany(targetEntity="Karambol\Account\UserInterface", inversedBy="users")
-   * @ORM\JoinTable(
-   *  name="zoco_users_workgroups",
-   *  joinColumns={
-   *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-   *  },
-   *  inverseJoinColumns={
-   *      @ORM\JoinColumn(name="workgroup_id", referencedColumnName="id")
-   *  }
-   * )
+   * @ORM\ManyToMany(targetEntity="Karambol\Entity\User", inversedBy="workgroups")
    */
   protected $users;
 
   public function __construct()
   {
-    $this->users = new \ArrayCollection();
+    $this->users = new \Doctrine\Common\Collections\ArrayCollection();
   }
 
   public function getId() {
     return $this->id;
   }
 
+  public function getUser() {
+    return $this->user;
+  }
+
+  public function setUser(\KarambolZocoPlugin\Entity\ZocoUserExtension $user) {
+    $this->user = $user;
+  }
+
   /**
    * @param UserGroup $userGroup
    */
-  public function addUser(UserInterface $user)
+  public function addUser(Karambol\Entity\User $user)
   {
       if ($this->users->contains($user)) {
           return;
@@ -70,7 +69,7 @@ class Workgroup {
   /**
    * @param UserGroup $userGroup
    */
-  public function removeUser(UserInterface $user)
+  public function removeUser(Karambol\Entity\User $user)
   {
       if (!$this->users->contains($user)) {
           return;
@@ -97,7 +96,5 @@ class Workgroup {
   {
     return $this->slug;
   }
-
-
 
 }
