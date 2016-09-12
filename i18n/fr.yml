@@ -2,6 +2,7 @@ plugins:
   zoco:
     search_page: Rechercher un marché
     pinboard_page: Ma sélection
+    workgroup_page: Mes groupes de travail
     pinboard:
       title: Mes marchés
       no_entries: Pas de marché épinglé pour le moment.

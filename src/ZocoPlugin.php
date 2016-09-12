@@ -20,7 +20,8 @@ class ZocoPlugin extends Plugin {
     $this->registerControllers([
       Controller\SearchController::class,
       Controller\TenderController::class,
-      Controller\PinboardController::class
+      Controller\PinboardController::class,
+      Controller\WorkgroupController::class
     ]);
     $this->registerTranslation('fr', __DIR__.'/../i18n/fr.yml');
     $this->addSystemPages($app);
@@ -43,12 +44,15 @@ class ZocoPlugin extends Plugin {
     $elasticsearchOptions = $options['elasticsearch'];
     $app->register(new Provider\ElasticsearchProvider($elasticsearchOptions, $app['logger']));
     $app->register(new Provider\TenderPinServiceProvider());
+    $app->register(new Provider\WorkgroupServiceProvider());
   }
 
   protected function addSystemPages($app) {
     $urlGen = $app['url_generator'];
     $this->registerSystemPage('plugins.zoco.search_page', $urlGen->generate('plugins_zoco_search'), 'zoco-search');
     $this->registerSystemPage('plugins.zoco.pinboard_page', $urlGen->generate('plugins_zoco_pinboard'), 'zoco-pinboard');
+    $this->registerSystemPage('plugins.zoco.workgroup_page', $urlGen->generate('plugins_zoco_workgroup'), 'zoco-workgroup');
+
   }
 
 }

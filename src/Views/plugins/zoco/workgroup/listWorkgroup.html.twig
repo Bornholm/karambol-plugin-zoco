@@ -1,0 +1,43 @@
+{% extends 'home/index.html.twig' %}
+{% import 'plugins/zoco/common/_tender_tags.html.twig' as tenderTags %}
+
+{% block head_style %}
+  {{ parent() }}
+  <link href="{{ asset('plugins/zoco/css/zoco.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block body_content %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Mes groupes de travail</h2>
+        <div class="table-responsive">
+          <div class="table-responsive">
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for workgroup in workgroups %}
+                  <tr>
+                    <td>{{workgroup.name}}</td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6" style="text-align: center;">
+                      <div class="alert alert-info">
+                        <i class="fa fa-exclamation-circle"></i> Vous n'appartenez à aucun groupe
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
