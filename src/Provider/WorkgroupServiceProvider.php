@@ -37,9 +37,12 @@ class WorkgroupService {
     $this->em = $em;
   }
 
-  public function getOwnsGroup(ZocoUserExtension $user)
+  public function getGroup($id, $slug)
   {
-    return $this->em->getRepository(ZocoUserExtension::class)->findBy(['zocouserextension_id' =>$user->getId()]);
+    return $this->em->getRepository(Workgroup::class)->findOneBy([
+      'id' => $id,
+      'slug' => $slug
+      ]);
   }
 
 }

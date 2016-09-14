@@ -39,3 +39,6 @@ plugins:
     tags:
       open: Ouvert
       closed: Clos
+    workgroup:
+      name: Nom du groupe de travail
+      create: Créer le groupe
