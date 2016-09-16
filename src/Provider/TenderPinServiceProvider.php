@@ -73,7 +73,7 @@ class TenderPinService {
 
   }
 
-  public function getUserPins(UserInterface $user) {
+  public function getUserPins(User $user) {
     return $this->em->getRepository(TenderPin::class)
       ->findByUser($user->getId())
     ;
