@@ -35,7 +35,7 @@ class Workgroup {
   protected $slug;
 
   /**
-   * @ORM\ManyToMany(targetEntity="Karambol\Entity\User", inversedBy="workgroups")
+   * @ORM\ManyToMany(targetEntity="\KarambolZocoPlugin\Entity\ZocoUserExtension", inversedBy="workgroups")
    */
   protected $users;
 
@@ -56,10 +56,15 @@ class Workgroup {
     $this->user = $user;
   }
 
+  public function getUsers()
+  {
+    return $this->users;
+  }
+
   /**
    * @param UserGroup $userGroup
    */
-  public function addUser(Karambol\Entity\User $user)
+  public function addUser(\KarambolZocoPlugin\Entity\ZocoUserExtension $user)
   {
       if ($this->users->contains($user)) {
           return;
@@ -69,7 +74,7 @@ class Workgroup {
   /**
    * @param UserGroup $userGroup
    */
-  public function removeUser(Karambol\Entity\User $user)
+  public function removeUser(\KarambolZocoPlugin\Entity\ZocoUserExtension $user)
   {
       if (!$this->users->contains($user)) {
           return;
@@ -89,12 +94,17 @@ class Workgroup {
 
   public function setSlug($slug)
   {
-    $this->slug = $slug;
+    $this->slug = $this->sluggable($slug);
   }
 
   public function getslug()
   {
     return $this->slug;
+  }
+
+  protected function sluggable($string)
+  {
+    return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $string)));
   }
 
 }

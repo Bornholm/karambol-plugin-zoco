@@ -10,33 +10,29 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-8">
-        <h2>Mes groupes de travail</h2>
+        <h2>{{workgroup.name}}</h2>
+
+      </div>
+      <div class="col-md-4">
+        <h2>Membres du groupe</h2>
         <div class="table-responsive">
           <div class="table-responsive">
             <table class="table table-condensed">
               <thead>
                 <tr>
                   <th>Nom</th>
-                  <th>Propriétaire</th>
                 </tr>
               </thead>
               <tbody>
-                {% for workgroup in workgroups %}
+                {% for member in workgroup.users %}
                   <tr>
-                    <td><a href="{{ path('plugins_zoco_workgroup_show', {'id':workgroup.id, 'slug' : workgroup.slug}) }}">{{workgroup.name}}</a> </td>
-                    <td>
-                      {% if workgroup.user.user.username == app.user.username %}
-                        Vous
-                      {% else %}
-                        {{workgroup.user.user.username}}
-                      {% endif %}
-                    </td>
+                    <td>{{member.user.username}}</a> </td>
                   </tr>
                 {% else %}
                   <tr>
                     <td colspan="6" style="text-align: center;">
                       <div class="alert alert-info">
-                        <i class="fa fa-exclamation-circle"></i> Vous n'appartenez à aucun groupe
+                        <i class="fa fa-exclamation-circle"></i> Aucun membre n'a été trouvé
                       </div>
                     </td>
                   </tr>
@@ -45,13 +41,6 @@
             </table>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <h2>Créer un groupe de travail</h2>
-        {{ form_start(workgroupForm) }}
-        {{ form_row(workgroupForm.name, {}) }}
-        {{ form_row(workgroupForm.submit, {}) }}
-        {{ form_end(workgroupForm, {"render_rest": true}) }}
       </div>
     </div>
   </div>
