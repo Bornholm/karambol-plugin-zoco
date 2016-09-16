@@ -3,7 +3,7 @@
 namespace KarambolZocoPlugin\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Karambol\Account\UserInterface;
+use Karambol\Entity\User;
 
 /**
  * @ORM\Entity
@@ -51,7 +51,7 @@ class TenderPin {
    *
    * @return static
    */
-  public function setUser(UserInterface $user)
+  public function setUser(User $user)
   {
     $this->user = $user;
     return $this;
