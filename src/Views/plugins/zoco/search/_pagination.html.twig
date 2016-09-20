@@ -5,9 +5,10 @@
   {% set hasNext = offset+limit < total %}
   <div class="col-md-12">
     <nav style="text-align: center;">
+      {{ dump(searchForm) }}
       <ul class="pagination">
         <li {% if not hasPrev %}class="disabled"{% endif %}>
-          <a {% if currentPage > 0 %}href="?q={{search|url_encode}}&p={{currentPage-1}}&l={{limit}}"{% endif %} aria-label="Previous">
+          <a {% if currentPage > 0 %}href="?q={{searchForm.vars.search|url_encode}}&p={{currentPage-1}}&l={{limit}}"{% endif %} aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
