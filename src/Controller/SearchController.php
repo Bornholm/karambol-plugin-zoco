@@ -29,13 +29,13 @@ class SearchController extends Controller {
     }
 
     $page = $request->query->get('p', 0);
-    $limit = $request->query->get('l', 50);
+    $limit = $request->query->get('l', 20);
 
     return $this->handleSearch($form->getData(), $page*$limit, $limit);
 
   }
 
-  protected function handleSearch(Search $search, $offset = 0, $limit = 20) {
+  protected function handleSearch(Search $search, $offset, $limit) {
 
     $twig = $this->get('twig');
     $esService = $this->get('zoco.elasticsearch');

@@ -3,24 +3,24 @@
   {% set totalPages = total/limit %}
   {% set hasPrev = currentPage > 0 %}
   {% set hasNext = offset+limit < total %}
+  {% set queryParams = app.request.query.all %}
   <div class="col-md-12">
     <nav style="text-align: center;">
-      {{ dump(searchForm) }}
       <ul class="pagination">
         <li {% if not hasPrev %}class="disabled"{% endif %}>
-          <a {% if currentPage > 0 %}href="?q={{searchForm.vars.search|url_encode}}&p={{currentPage-1}}&l={{limit}}"{% endif %} aria-label="Previous">
+          <a {% if currentPage > 0 %}href="?{{ queryParams|merge({"p":currentPage-1,"l":limit})|url_encode }}"{% endif %} aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
         {% for page in currentPage-3..currentPage+3 %}
           {% if page < totalPages and page >= 0 %}
           <li {% if currentPage == page %}class="active"{% endif %}>
-            <a href="?q={{search|url_encode}}&p={{page}}&l={{limit}}">{{page}}</a>
+            <a href="?{{ queryParams|merge({"p":page,"l":limit})|url_encode }}">{{page}}</a>
           </li>
           {% endif %}
         {% endfor %}
         <li {% if not hasNext %}class="disabled"{% endif %}>
-          <a {% if hasNext %}href="?q={{search|url_encode}}&p={{currentPage+1}}&l={{limit}}"{% endif %} aria-label="Next">
+          <a {% if hasNext %}href="?{{ queryParams|merge({"p":currentPage+1,"l":limit})|url_encode }}"{% endif %} aria-label="Next">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>
