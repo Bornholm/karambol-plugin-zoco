@@ -9,15 +9,11 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
-        <form action="{{ path('plugins_zoco_search') }}" method="get" class="form">
-          {{ form_start(searchForm) }}
-          <div class="input-group input-group-lg">
-            {{ form_widget(searchForm.search, {"attr": {"placeholder": "plugins.zoco.search.search_placeholder"|trans }}) }}
-            <span class="input-group-btn">
-              {{ form_widget(searchForm.submit) }}
-            </span>
-          </div>
-        </form>
+        {{ form_start(searchForm) }}
+        <div class="input-group input-group-lg">
+          {{ form_widget(searchForm.q, {"attr": {"placeholder": "plugins.zoco.search.search_placeholder"|trans }}) }}
+          <span class="input-group-addon"><i class="fa fa-search"></i></span>
+        </div>
         <div class="clearfix">
           <a class="pull-right" data-toggle="collapse" href="#advanced"
             aria-expanded="false" aria-controls="advanced">
@@ -26,7 +22,17 @@
         </div>
         <div class="collapse panel panel-default" id="advanced">
           <div class="panel-body">
-
+            <div class="row">
+              <div class="col-md-2">
+                {{ form_row(searchForm.a) }}
+              </div>
+              <div class="col-md-2">
+                {{ form_row(searchForm.b) }}
+              </div>
+            </div>
+            <div class="clearfix">
+              {{ form_row(searchForm.s, {"attr": {"class": "pull-right btn-primary"}}) }}
+            </div>
           </div>
         </div>
         {{ form_end(searchForm, {"render_rest": true}) }}
@@ -43,4 +49,5 @@
     {% endif %}
     {% if total is defined and total > 0 %}{% include 'plugins/zoco/search/_pagination.html.twig' %}{% endif %}
     {% include 'plugins/zoco/common/_tender_actions.html.twig' %}
+    {{ appendScript('plugins/zoco/js/search.js') }}
 {% endblock %}

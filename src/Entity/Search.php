@@ -3,7 +3,6 @@
 namespace KarambolZocoPlugin\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Karambol\Account\UserInterface;
 
 /**
  * @ORM\Entity
@@ -22,6 +21,16 @@ class Search {
    * @var string
    */
   protected $search;
+
+  /**
+   * @var \DateTime
+   */
+  protected $after;
+
+  /**
+   * @var \DateTime
+   */
+  protected $before;
 
   /**
    * @ORM\ManyToOne(targetEntity="Karambol\Account\UserInterface")
@@ -53,6 +62,44 @@ class Search {
   }
 
   /**
+   * @return \DateTime
+   */
+  public function getBefore()
+  {
+    return $this->before;
+  }
+
+  /**
+   * @param \DateTime $before
+   *
+   * @return static
+   */
+  public function setBefore($before)
+  {
+    $this->before = $before;
+    return $this;
+  }
+
+  /**
+   * @return \DateTime
+   */
+  public function getAfter()
+  {
+    return $this->after;
+  }
+
+  /**
+   * @param \DateTime $before
+   *
+   * @return static
+   */
+  public function setAfter($after)
+  {
+    $this->after = $after;
+    return $this;
+  }
+
+  /**
    * @return Karambol\Account\UserInterface
    */
   public function getUser()
@@ -73,36 +120,66 @@ class Search {
 
   public function getElasticsearchQuery() {
 
-    $body = [];
-
-    $body['filter'] = [
-      'and' => [
-        [ 'exists' => [ 'field' => 'main' ] ]
+    $body = [
+      'query' => [
+        'filtered' => [
+          'filter' => [
+            'and' => [
+              [ 'exists' => [ 'field' => 'main' ] ]
+            ]
+          ],
+          'query' => [
+            'bool' => [
+              'must' => []
+            ]
+          ]
+        ]
       ]
     ];
+    $filterAnd = &$body['query']['filtered']['filter']['and'];
+    $queryMust = &$body['query']['filtered']['query']['bool']['must'];
 
     $search = $this->getSearch();
 
     if(!empty($search)) {
-      $query = [
-        'multi_match' => [
-          'fields' => [
-            '*.GESTION.REFERENCE.IDWEB',
-            '*.GESTION.INDEXATION.RESUME_OBJET',
-            '*.DONNEES.IDENTITE.*',
-            '*.DONNEES.OBJET.TITRE_MARCHE',
-            '*.DONNEES.OBJET.OBJET_COMPLET',
-            '*.DONNEES.OBJET.LOTS.LOT.INTITULE',
-            '*.DONNEES.OBJET.LOTS.LOT.DESCRIPTION',
-            '*.DONNEES.OBJET.LOTS.DESCRIPTION',
-            '*.DONNEES.OBJET.LOTS.INTITULE'
-          ],
-          'query' => $search,
-          'operator' => 'AND',
-          'type' => 'cross_fields'
+      $queryMust[] = [ 'multi_match' => [
+        'fields' => [
+          '*.GESTION.REFERENCE.IDWEB',
+          '*.GESTION.INDEXATION.RESUME_OBJET',
+          '*.DONNEES.IDENTITE.*',
+          '*.DONNEES.OBJET.TITRE_MARCHE',
+          '*.DONNEES.OBJET.OBJET_COMPLET',
+          '*.DONNEES.OBJET.LOTS.LOT.INTITULE',
+          '*.DONNEES.OBJET.LOTS.LOT.DESCRIPTION',
+          '*.DONNEES.OBJET.LOTS.DESCRIPTION',
+          '*.DONNEES.OBJET.LOTS.INTITULE'
+        ],
+        'query' => $search,
+        'operator' => 'AND',
+        'type' => 'cross_fields'
+      ]];
+    }
+
+    $before = $this->getBefore();
+    if($before !== null) {
+      $filterAnd[] = [
+        'range' => [
+          'main.GESTION.INDEXATION.DATE_PUBLICATION'  => [
+            'lt' => $before->format('Y-m-d')
+          ]
         ]
       ];
-      $body['query'] = $query;
+    }
+
+    $after = $this->getAfter();
+    if($after !== null) {
+      $filterAnd[] = [
+        'range' => [
+          'main.GESTION.INDEXATION.DATE_PUBLICATION'  => [
+            'gt' => $after->format('Y-m-d')
+          ]
+        ]
+      ];
     }
 
     return ['body' => $body];

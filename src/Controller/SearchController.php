@@ -22,7 +22,7 @@ class SearchController extends Controller {
 
     $form->handleRequest($request);
 
-    if(!$form->isValid()) {
+    if(!$form->isValid() && count($form->getErrors()) > 0) {
       return $this->render('plugins/zoco/search/search.html.twig', [
         'searchForm' => $form->createView()
       ]);
@@ -41,9 +41,9 @@ class SearchController extends Controller {
     $esService = $this->get('zoco.elasticsearch');
     $query = $search->getElasticsearchQuery();
 
-    $query['from'] = $offset;
-    $query['size'] = $limit;
-    $query['sort'] = [
+    $query['body']['from'] = $offset;
+    $query['body']['size'] = $limit;
+    $query['body']['sort'] = [
       ['main.GESTION.INDEXATION.DATE_PUBLICATION' => 'desc'],
       ['main.GESTION.INDEXATION.DATE_LIMITE_REPONSE' => 'asc']
     ];

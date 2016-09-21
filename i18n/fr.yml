@@ -18,6 +18,8 @@ plugins:
       tags: Tags
       advanced_search: Recherche avancée
       do_search: Chercher
+      after_date: Publié après le
+      before_date: Publié avant le
     tender:
       title: Intitulé
       description: Description
