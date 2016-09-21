@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type as Type;
 use Symfony\Component\Validator\Constraints as Constraints;
+use KarambolZocoPlugin\Entity\Search;
 
 class SearchType extends AbstractType
 {
@@ -20,12 +21,40 @@ class SearchType extends AbstractType
       ->add('a', Type\DateType::class, [
         'label' => 'plugins.zoco.search.after_date',
         'required' => false,
-        'property_path' => 'after'
+        'widget' => 'single_text',
+        'html5' => false,
+        'attr' => [
+          'data-provide' => 'datepicker',
+          'data-date-language' => 'fr',
+          'data-date-format' => 'yyyy-mm-dd',
+          'data-date-end-date' => '-1d'
+        ],
+        'constraints' => [
+          new Constraints\Range(['max' => new \DateTime('yesterday')])
+        ],
+        'property_path' => 'publishedAfter'
       ])
       ->add('b', Type\DateType::class, [
         'label' => 'plugins.zoco.search.before_date',
         'required' => false,
-        'property_path' => 'before'
+        'widget' => 'single_text',
+        'html5' => false,
+        'attr' => [
+          'data-provide' => 'datepicker',
+          'data-date-language' => 'fr',
+          'data-date-format' => 'yyyy-mm-dd'
+        ],
+        'property_path' => 'publishedBefore'
+      ])
+      ->add('t', Type\ChoiceType::class, [
+        'label' => 'plugins.zoco.search.status',
+        'choices' => [
+          'plugins.zoco.search.opened' => Search::STATUS_OPENED,
+          'plugins.zoco.search.closed' => Search::STATUS_CLOSED
+        ],
+        'expanded' => true,
+        'multiple' => true,
+        'property_path' => 'status'
       ])
       ->add('s', Type\SubmitType::class, [
         'label' => 'plugins.zoco.search.do_search'

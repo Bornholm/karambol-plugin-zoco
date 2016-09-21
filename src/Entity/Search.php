@@ -10,6 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Search {
 
+  const STATUS_NONE = 0;
+  const STATUS_OPENED = 1;
+  const STATUS_CLOSED = 2;
+  const STATUS_BOTH = 3;
+
   /**
    * @ORM\Id
    * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -24,13 +29,21 @@ class Search {
 
   /**
    * @var \DateTime
+   * @ORM\Column(type="date")
    */
-  protected $after;
+  protected $publishedAfter;
 
   /**
    * @var \DateTime
+   * @ORM\Column(type="date")
    */
-  protected $before;
+  protected $publishedBefore;
+
+  /**
+   * @var int
+   * @ORM\Column(type="integer")
+   */
+  protected $status = self::STATUS_OPENED;
 
   /**
    * @ORM\ManyToOne(targetEntity="Karambol\Account\UserInterface")
@@ -64,28 +77,28 @@ class Search {
   /**
    * @return \DateTime
    */
-  public function getBefore()
+  public function getPublishedBefore()
   {
-    return $this->before;
+    return $this->publishedBefore;
   }
 
   /**
-   * @param \DateTime $before
+   * @param \DateTime $publishedBefore
    *
    * @return static
    */
-  public function setBefore($before)
+  public function setPublishedBefore($publishedBefore)
   {
-    $this->before = $before;
+    $this->publishedBefore = $publishedBefore;
     return $this;
   }
 
   /**
    * @return \DateTime
    */
-  public function getAfter()
+  public function getPublishedAfter()
   {
-    return $this->after;
+    return $this->publishedAfter;
   }
 
   /**
@@ -93,9 +106,39 @@ class Search {
    *
    * @return static
    */
-  public function setAfter($after)
+  public function setPublishedAfter($publishedAfter)
   {
-    $this->after = $after;
+    $this->publishedAfter = $publishedAfter;
+    return $this;
+  }
+
+  /**
+   * @return array
+   */
+  public function getStatus()
+  {
+    switch($this->status) {
+      case self::STATUS_OPENED:
+        return [self::STATUS_OPENED];
+      case self::STATUS_CLOSED:
+        return [self::STATUS_CLOSED];
+      case self::STATUS_BOTH:
+        return [self::STATUS_CLOSED, self::STATUS_OPENED];
+      default:
+        return [];
+    }
+  }
+
+  /**
+   * @param \DateTime $before
+   *
+   * @return static
+   */
+  public function setStatus(array $status)
+  {
+    $this->status = array_reduce($status, function($result, $item) {
+      return $result|$item;
+    }, 0);
     return $this;
   }
 
@@ -116,6 +159,12 @@ class Search {
   {
     $this->user = $user;
     return $this;
+  }
+
+  public function hasAdvancedParameters() {
+    return $this->getPublishedBefore() ||
+      $this->getPublishedAfter()
+    ;
   }
 
   public function getElasticsearchQuery() {
@@ -160,23 +209,37 @@ class Search {
       ]];
     }
 
-    $before = $this->getBefore();
-    if($before !== null) {
+    $publishedBefore = $this->getPublishedBefore();
+    if($publishedBefore !== null) {
       $filterAnd[] = [
         'range' => [
           'main.GESTION.INDEXATION.DATE_PUBLICATION'  => [
-            'lt' => $before->format('Y-m-d')
+            'lt' => $publishedBefore->format('Y-m-d')
           ]
         ]
       ];
     }
 
-    $after = $this->getAfter();
-    if($after !== null) {
+    $publishedAfter = $this->getPublishedAfter();
+    if($publishedAfter !== null) {
       $filterAnd[] = [
         'range' => [
           'main.GESTION.INDEXATION.DATE_PUBLICATION'  => [
-            'gt' => $after->format('Y-m-d')
+            'gt' => $publishedAfter->format('Y-m-d')
+          ]
+        ]
+      ];
+    }
+
+    $status = $this->status;
+    if($status === self::STATUS_OPENED || $status === self::STATUS_CLOSED) {
+      $now = new \DateTime('now');
+      $comp = $status === self::STATUS_OPENED ? 'gt' : 'lt';
+      $filterAnd[] = [
+        'range' => [
+          'main.GESTION.INDEXATION.DATE_LIMITE_REPONSE'  => [
+            $comp => $now->format('Y-m-d H:i:s'),
+            'format' => 'yyyy-MM-dd HH:mm:ss'
           ]
         ]
       ];

@@ -20,6 +20,9 @@ plugins:
       do_search: Chercher
       after_date: Publié après le
       before_date: Publié avant le
+      status: Statut du marché
+      opened: Ouvert
+      closed: Clos
     tender:
       title: Intitulé
       description: Description

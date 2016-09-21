@@ -38,3 +38,4 @@ assets:
   zoco-plugin:
     - { src: vendor/bornholm/karambol-plugin-zoco/public/css, dest: public/plugins/zoco/css }
     - { src: vendor/bornholm/karambol-plugin-zoco/public/js, dest: public/plugins/zoco/js }
+    - { src: vendor/eternicode/bootstrap-datepicker/dist, dest: public/plugins/zoco/vendor/bootstrap-datepicker }

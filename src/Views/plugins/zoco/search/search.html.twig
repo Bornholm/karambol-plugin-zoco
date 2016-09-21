@@ -3,6 +3,7 @@
 {% block head_style %}
   {{ parent() }}
   <link href="{{ asset('plugins/zoco/css/zoco.css') }}" rel="stylesheet" />
+  <link href="{{ asset('plugins/zoco/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block body_content %}
@@ -20,7 +21,8 @@
             {{ 'plugins.zoco.search.advanced_search'|trans }}
           </a>
         </div>
-        <div class="collapse panel panel-default" id="advanced">
+        {% set showAdvancedPanel = searchForm.vars.value.hasAdvancedParameters() or not searchForm.vars.valid %}
+        <div class="collapse panel panel-default {{ showAdvancedPanel ? 'in' }}" id="advanced">
           <div class="panel-body">
             <div class="row">
               <div class="col-md-2">
@@ -28,6 +30,9 @@
               </div>
               <div class="col-md-2">
                 {{ form_row(searchForm.b) }}
+              </div>
+              <div class="col-md-2">
+                {{ form_row(searchForm.t) }}
               </div>
             </div>
             <div class="clearfix">
@@ -38,7 +43,6 @@
         {{ form_end(searchForm, {"render_rest": true}) }}
       </div>
     </div>
-    {% if results is defined %}
     <div class="row">
       <div class="col-md-12">
         <div class="table-responsive">
@@ -46,8 +50,13 @@
         </div>
       </div>
     </div>
-    {% endif %}
     {% if total is defined and total > 0 %}{% include 'plugins/zoco/search/_pagination.html.twig' %}{% endif %}
     {% include 'plugins/zoco/common/_tender_actions.html.twig' %}
-    {{ appendScript('plugins/zoco/js/search.js') }}
+    {{
+      appendScript([
+        'plugins/zoco/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js',
+        'plugins/zoco/vendor/bootstrap-datepicker/locales/bootstrap-datepicker.' ~ app.locale ~ '.min.js',
+        'plugins/zoco/js/search.js'
+      ])
+    }}
 {% endblock %}

@@ -22,7 +22,9 @@ class SearchController extends Controller {
 
     $form->handleRequest($request);
 
-    if(!$form->isValid() && count($form->getErrors()) > 0) {
+    $hasRealErrors = count($form->getErrors(true, true)) > 0;
+
+    if(!$form->isValid() && $hasRealErrors) {
       return $this->render('plugins/zoco/search/search.html.twig', [
         'searchForm' => $form->createView()
       ]);
