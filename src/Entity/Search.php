@@ -163,7 +163,8 @@ class Search {
 
   public function hasAdvancedParameters() {
     return $this->getPublishedBefore() ||
-      $this->getPublishedAfter()
+      $this->getPublishedAfter() ||
+      $this->getStatus() !== self::STATUS_OPENED
     ;
   }
 
@@ -191,7 +192,7 @@ class Search {
     $search = $this->getSearch();
 
     if(!empty($search)) {
-      $queryMust[] = [ 'multi_match' => [
+      $queryMust[] = [ 'simple_query_string' => [
         'fields' => [
           '*.GESTION.REFERENCE.IDWEB',
           '*.GESTION.INDEXATION.RESUME_OBJET',
@@ -204,8 +205,7 @@ class Search {
           '*.DONNEES.OBJET.LOTS.INTITULE'
         ],
         'query' => $search,
-        'operator' => 'AND',
-        'type' => 'cross_fields'
+        'default_operator' => 'AND'
       ]];
     }
 

@@ -12,7 +12,7 @@
       <div class="col-md-12">
         {{ form_start(searchForm) }}
         <div class="input-group input-group-lg">
-          {{ form_widget(searchForm.q, {"attr": {"placeholder": "plugins.zoco.search.search_placeholder"|trans }}) }}
+          {{ form_widget(searchForm.q, {"attr": {"placeholder": "plugins.zoco.search.search_placeholder"|trans}})}}
           <span class="input-group-addon"><i class="fa fa-search"></i></span>
         </div>
         <div class="clearfix">
@@ -25,6 +25,11 @@
         <div class="collapse panel panel-default {{ showAdvancedPanel ? 'in' }}" id="advanced">
           <div class="panel-body">
             <div class="row">
+              <div class="col-md-6">
+                <div class="alert alert-info">
+                  {{ markdown("plugins.zoco.search.advanced_search_operators"|trans) }}
+                </div>
+              </div>
               <div class="col-md-2">
                 {{ form_row(searchForm.a) }}
               </div>

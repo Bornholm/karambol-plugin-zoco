@@ -24,7 +24,7 @@ class ZocoPlugin extends Plugin {
       Controller\PinboardController::class,
       Controller\WorkgroupController::class
     ]);
-    $this->registerTranslation('fr', __DIR__.'/../i18n/fr.yml');
+    $this->registerTranslation('fr', __DIR__.'/../locales/fr.yml');
     $this->addSystemPages($app);
     $this->addCommands($app, $options);
     $this->addServices($app, $options);

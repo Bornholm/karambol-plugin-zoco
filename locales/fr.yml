@@ -8,6 +8,16 @@ plugins:
       no_entries: Pas de marché épinglé pour le moment.
     search:
       search_placeholder: "Exemple: logiciel libre"
+      advanced_search_operators: |
+        **Opérateurs de recherche avancés**
+        ```
+        Signe     Opération                             Exemple
+        +         Et logique (opérateur par défaut)     +logiciel +libre
+        |         Ou logique                            libre | linux
+        -         Négation                              logiciel -microsoft -oracle
+        ()        Association                           logiciel -(microsoft oracle)
+        ""        Phrase exacte                         "base de données relationnelle"
+        ```
       no_results: Aucun résultat. Veuillez modifier votre recherche.
       tender_id: Identifiant
       tender_title: Intitulé
