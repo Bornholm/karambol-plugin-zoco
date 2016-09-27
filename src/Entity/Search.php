@@ -3,6 +3,7 @@
 namespace KarambolZocoPlugin\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Karambol\Entity\User;
 
 /**
  * @ORM\Entity
@@ -46,8 +47,8 @@ class Search {
   protected $status = self::STATUS_OPENED;
 
   /**
-   * @ORM\ManyToOne(targetEntity="Karambol\Account\UserInterface")
-   * @ORM\JoinColumn(name="user", referencedColumnName="id", orphanRemoval=true, nullable=false)
+   * @ORM\ManyToOne(targetEntity="Karambol\Entity\User")
+   * @ORM\JoinColumn(name="user", referencedColumnName="id", nullable=false)
    */
   protected $user;
 
@@ -143,7 +144,7 @@ class Search {
   }
 
   /**
-   * @return Karambol\Account\UserInterface
+   * @return Karambol\Entity\User
    */
   public function getUser()
   {
@@ -155,7 +156,7 @@ class Search {
    *
    * @return static
    */
-  public function setUser(UserInterface $user)
+  public function setUser(User $user)
   {
     $this->user = $user;
     return $this;
