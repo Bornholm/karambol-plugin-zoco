@@ -1,0 +1,67 @@
+{% extends 'home/index.html.twig' %}
+
+{% block head_style %}
+  {{ parent() }}
+  <link href="{{ asset('plugins/zoco/css/zoco.css') }}" rel="stylesheet" />
+  <link href="{{ asset('plugins/zoco/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block body_content %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        {{ form_start(searchForm) }}
+        <div class="input-group input-group-lg">
+          {{ form_widget(searchForm.q, {"attr": {"placeholder": "plugins.zoco.search.search_placeholder"|trans}})}}
+          <span class="input-group-addon"><i class="fa fa-search"></i></span>
+        </div>
+        <div class="clearfix">
+          <a class="pull-right" data-toggle="collapse" href="#advanced"
+            aria-expanded="false" aria-controls="advanced">
+            {{ 'plugins.zoco.search.advanced_search'|trans }}
+          </a>
+        </div>
+        {% set showAdvancedPanel = searchForm.vars.value.hasAdvancedParameters() or not searchForm.vars.valid %}
+        <div class="collapse panel panel-default {{ showAdvancedPanel ? 'in' }}" id="advanced">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="alert alert-info">
+                  {{ markdown("plugins.zoco.search.advanced_search_operators"|trans) }}
+                </div>
+              </div>
+              <div class="col-md-2">
+                {{ form_row(searchForm.a) }}
+              </div>
+              <div class="col-md-2">
+                {{ form_row(searchForm.b) }}
+              </div>
+              <div class="col-md-2">
+                {{ form_row(searchForm.t) }}
+              </div>
+            </div>
+            <div class="clearfix">
+              {{ form_row(searchForm.s, {"attr": {"class": "pull-right btn-primary"}}) }}
+            </div>
+          </div>
+        </div>
+        {{ form_end(searchForm, {"render_rest": true}) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          {% include 'plugins/zoco/search/_tenders.html.twig' %}
+        </div>
+      </div>
+    </div>
+    {% if total is defined and total > 0 %}{% include 'plugins/zoco/search/_pagination.html.twig' %}{% endif %}
+    {% include 'plugins/zoco/common/_tender_actions.html.twig' %}
+    {{
+      appendScript([
+        'plugins/zoco/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js',
+        'plugins/zoco/vendor/bootstrap-datepicker/locales/bootstrap-datepicker.' ~ app.locale ~ '.min.js',
+        'plugins/zoco/js/search.js'
+      ])
+    }}
+{% endblock %}

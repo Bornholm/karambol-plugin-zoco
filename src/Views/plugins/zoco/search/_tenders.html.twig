@@ -4,7 +4,7 @@
   <thead>
     <tr>
       <td colspan="6" style="text-align: right">
-        <b>{{ 'plugins.zoco.search.total_results'|trans() }}: {{ total }}</b>
+        <b>{{ 'plugins.zoco.search.total_results'|trans() }}: {{ total is defined ? total : 0 }}</b>
       </td>
     </tr>
     <tr>
@@ -17,6 +17,7 @@
     </tr>
   </thead>
   <tbody>
+    {% set results = results is defined ? results : [] %}
     {% for tender in results %}
       <tr>
         <td><span style="white-space:nowrap;">{{ tender.type|upper }}-{{tender.id}}</span></td>

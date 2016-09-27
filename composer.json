@@ -1,14 +1,28 @@
 {
     "name": "bornholm/karambol-plugin-zoco",
     "authors": [
-        {
-            "name": "William Petit",
-            "email": "wpetit@cadoles.com"
+      {
+        "name": "William Petit",
+        "email": "wpetit@cadoles.com"
+      }
+    ],
+    "repositories": [
+      {
+        "type": "package",
+        "package": {
+          "name": "eternicode/bootstrap-datepicker",
+          "version": "1.6.4",
+          "dist": {
+            "url": "https://github.com/eternicode/bootstrap-datepicker/archive/v1.6.4.zip",
+            "type": "zip"
+          }
         }
+      }
     ],
     "require": {
-        "elasticsearch/elasticsearch": "^2.2",
-        "symfony/property-access": "^3.1"
+      "elasticsearch/elasticsearch": "^2.2",
+      "symfony/property-access": "^3.1",
+      "eternicode/bootstrap-datepicker": "1.6.4"
     },
     "autoload": {
       "psr-4": {

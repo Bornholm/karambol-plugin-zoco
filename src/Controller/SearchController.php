@@ -4,8 +4,8 @@ namespace KarambolZocoPlugin\Controller;
 
 use Karambol\Controller\Controller;
 use Karambol\KarambolApp;
-use KarambolZocoPlugin\Search as Search;
-use KarambolZocoPlugin\Entity\ZocoUserExtension;
+use KarambolZocoPlugin\Entity\Search;
+use KarambolZocoPlugin\Form\Type\SearchType;
 
 class SearchController extends Controller {
 
@@ -18,70 +18,68 @@ class SearchController extends Controller {
     $request = $this->get('request');
     $twig = $this->get('twig');
 
-    $search = $request->query->get('q');
-    $page = $request->query->get('p', 0);
-    $limit = $request->query->get('l', 50);
+    $form = $this->getSearchForm();
 
-    return $this->handleSearch(empty($search) ? '' : $search, $page*$limit, $limit);
+    $form->handleRequest($request);
+
+    $hasRealErrors = count($form->getErrors(true, true)) > 0;
+
+    if(!$form->isValid() && $hasRealErrors) {
+      return $this->render('plugins/zoco/search/search.html.twig', [
+        'searchForm' => $form->createView()
+      ]);
+    }
+
+    $page = $request->query->get('p', 0);
+    $limit = $request->query->get('l', 20);
+
+    return $this->handleSearch($form->getData(), $page*$limit, $limit);
 
   }
 
-  protected function handleSearch($search, $offset = 0, $limit = 50) {
+  protected function handleSearch(Search $search, $offset, $limit) {
 
     $twig = $this->get('twig');
     $esService = $this->get('zoco.elasticsearch');
+    $query = $search->getElasticsearchQuery();
 
-    $params = [
-      'body' => [
-        'filter' => [
-          'and' => [
-            [ 'exists' => [ 'field' => 'main' ] ]
-          ]
-        ],
-        'from' => $offset,
-        'size' => $limit,
-        'sort' => [
-          ['main.GESTION.INDEXATION.DATE_PUBLICATION' => 'desc'],
-          ['main.GESTION.INDEXATION.DATE_LIMITE_REPONSE' => 'asc']
-        ]
-      ]
+    $query['body']['from'] = $offset;
+    $query['body']['size'] = $limit;
+    $query['body']['sort'] = [
+      ['main.GESTION.INDEXATION.DATE_PUBLICATION' => 'desc'],
+      ['main.GESTION.INDEXATION.DATE_LIMITE_REPONSE' => 'asc']
     ];
 
-    if(!empty($search)) {
-      $query = [
-        'multi_match' => [
-          'fields' => [
-            '*.GESTION.REFERENCE.IDWEB',
-            '*.GESTION.INDEXATION.RESUME_OBJET',
-            '*.DONNEES.IDENTITE.*',
-            '*.DONNEES.OBJET.TITRE_MARCHE',
-            '*.DONNEES.OBJET.OBJET_COMPLET',
-            '*.DONNEES.OBJET.LOTS.LOT.INTITULE',
-            '*.DONNEES.OBJET.LOTS.LOT.DESCRIPTION',
-            '*.DONNEES.OBJET.LOTS.DESCRIPTION',
-            '*.DONNEES.OBJET.LOTS.INTITULE'
-          ],
-          'query' => $search,
-          'operator' => 'AND',
-          'type' => 'cross_fields'
-        ]
-      ];
-      $params['body']['query'] = $query;
-    }
-
-    $results = $esService->query($params);
+    $results = $esService->query($query);
 
     $user = $this->get('user');
     $pins = $user !== null ? $this->get('zoco.tender_pin')->havePins($user, $results->getDocuments()) : [];
 
-    return $twig->render('plugins/zoco/search/results.html.twig', [
-      'search' => $search,
+    return $twig->render('plugins/zoco/search/search.html.twig', [
+      'searchForm' => $this->getSearchForm($search)->createView(),
       'results' => $results->getDocuments(),
       'total' => $results->getTotal(),
       'offset' => $offset,
       'limit' => $limit,
       'pins' => $pins
     ]);
+
+  }
+
+  protected function getSearchForm(Search $search = null) {
+
+    $formFactory = $this->get('form.factory');
+    $urlGen = $this->get('url_generator');
+
+    if($search === null) $search = new Search();
+
+    $formBuilder = $formFactory->createBuilder(SearchType::class, $search);
+    $action = $urlGen->generate('plugins_zoco_search');
+
+    return $formBuilder->setAction($action)
+      ->setMethod('GET')
+      ->getForm()
+    ;
 
   }
 
