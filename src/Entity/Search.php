@@ -165,7 +165,7 @@ class Search {
   public function hasAdvancedParameters() {
     return $this->getPublishedBefore() ||
       $this->getPublishedAfter() ||
-      $this->getStatus() !== self::STATUS_OPENED
+      $this->status !== self::STATUS_OPENED
     ;
   }
 
@@ -237,10 +237,22 @@ class Search {
       $now = new \DateTime('now');
       $comp = $status === self::STATUS_OPENED ? 'gt' : 'lt';
       $filterAnd[] = [
-        'range' => [
-          'main.GESTION.INDEXATION.DATE_LIMITE_REPONSE'  => [
-            $comp => $now->format('Y-m-d H:i:s'),
-            'format' => 'yyyy-MM-dd HH:mm:ss'
+        'or' => [
+          [
+            'range' => [
+              'main.GESTION.INDEXATION.DATE_LIMITE_REPONSE'  => [
+                $comp => $now->format('Y-m-d H:i:s'),
+                'format' => 'yyyy-MM-dd HH:mm:ss'
+              ]
+            ]
+          ],
+          [
+            'range' => [
+              'main.DONNEES.CONDITION_DELAI.RECEPT_OFFRES'  => [
+                $comp => $now->format('Y-m-d H:i:s'),
+                'format' => 'yyyy-MM-dd HH:mm:ss'
+              ]
+            ]
           ]
         ]
       ];
