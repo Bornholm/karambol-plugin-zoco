@@ -8,6 +8,7 @@ interface TenderInterface {
   public function getDescription();
   public function getPublicationDate();
   public function getClosingDate();
+  public function isClosed();
   public function getPublicationUrl();
 
   public function isPinned($userId);

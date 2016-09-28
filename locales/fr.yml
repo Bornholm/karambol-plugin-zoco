@@ -56,6 +56,7 @@ plugins:
     tags:
       open: Ouvert
       closed: Clos
+      unknown: Inconnu
     workgroup:
       name: Nom du groupe de travail
       create: Créer le groupe

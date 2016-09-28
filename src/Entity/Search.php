@@ -234,9 +234,11 @@ class Search {
 
     $status = $this->status;
     if($status === self::STATUS_OPENED || $status === self::STATUS_CLOSED) {
+
       $now = new \DateTime('now');
       $comp = $status === self::STATUS_OPENED ? 'gt' : 'lt';
-      $filterAnd[] = [
+
+      $filter = [
         'or' => [
           [
             'range' => [
@@ -256,6 +258,18 @@ class Search {
           ]
         ]
       ];
+
+      // Si on cherche les marchés clos, on prend également en compte les marchés
+      // sans date de cloture mais avec une decision d'attribution => ce sont des
+      // marchés clos
+      if($status === self::STATUS_CLOSED) {
+        $filter['or'][] = [
+          'exists' => [ 'field' => 'main.DONNEES.ATTRIBUTION.DECISION' ]
+        ];
+      }
+
+      $filterAnd[] = $filter;
+      
     }
 
     return ['body' => $body];

@@ -35,6 +35,15 @@ class BoampTender extends Document implements TenderInterface  {
     return $closingDate;
   }
 
+  public function isClosed() {
+    $closingDate = $this->getClosingDate();
+    if(!empty($closingDate)) $closingDate = new \DateTime($closingDate);
+    $now = new \DateTime();
+    if($closingDate && $closingDate <= $now) return true;
+    $attribution = $this->get('[main][DONNEES][ATTRIBUTION][DECISION]');
+    return !empty($attribution);
+  }
+
   public function getPublicationUrl() {
     $publicationUrl = $this->get('[main][DONNEES][IDENTITE][URL_PARTICIPATION]');
     if(empty($publicationUrl)) $publicationUrl = $this->get('[main][DONNEES][IDENTITE][URL_PROFIL_ACHETEUR]');

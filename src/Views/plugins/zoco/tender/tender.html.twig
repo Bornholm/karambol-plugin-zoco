@@ -77,9 +77,9 @@
             <div class="panel-body">
               <dl class="dl-horizontal">
                 <dt>{{'plugins.zoco.tender.publication_date'|trans}}</dt>
-                <dd>{{tender.publicationDate|date('d/m/Y')}}</dd>
+                <dd>{{tender.publicationDate is null ? '--' : tender.publicationDate|date('d/m/Y')}}</dd>
                 <dt>{{'plugins.zoco.tender.closing_date'|trans}}</dt>
-                <dd>{{tender.closingDate|date('d/m/Y H:i:s')}}</dd>
+                <dd>{{tender.closingDate is null ? '--' : tender.closingDate|date('d/m/Y H:i:s')}}</dd>
               </dl>
             </div>
           </div>
