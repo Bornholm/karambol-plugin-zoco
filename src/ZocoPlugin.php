@@ -45,6 +45,7 @@ class ZocoPlugin extends Plugin {
     $elasticsearchOptions = $options['elasticsearch'];
     $app->register(new Provider\ElasticsearchProvider($elasticsearchOptions, $app['logger']));
     $app->register(new Provider\TenderPinServiceProvider());
+    $app->register(new Provider\TenderWorkgroupServiceProvider());
     $app->register(new Provider\WorkgroupServiceProvider());
   }
 

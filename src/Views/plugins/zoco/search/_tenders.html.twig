@@ -1,5 +1,4 @@
 {% import 'plugins/zoco/common/_tender_tags.html.twig' as tenderTags %}
-
 <table class="table table-condensed">
   <thead>
     <tr>
@@ -8,10 +7,10 @@
       </td>
     </tr>
     <tr>
-      <th>{{ 'plugins.zoco.search.tender_id'|trans() }}</th>
+      <th width="180px">{{ 'plugins.zoco.search.tender_id'|trans() }}</th>
       <th>{{ 'plugins.zoco.search.tender_title'|trans() }}</th>
       <th>{{ 'plugins.zoco.search.tags'|trans() }}</th>
-      <th>{{ 'plugins.zoco.search.tender_publication_date'|trans() }}</th>
+      <!--<th>{{ 'plugins.zoco.search.tender_publication_date'|trans() }}</th> -->
       <th>{{ 'plugins.zoco.search.tender_closing_date'|trans() }}</th>
       <th>{{ 'plugins.zoco.search.actions'|trans() }}</th>
     </tr>
@@ -20,10 +19,33 @@
     {% set results = results is defined ? results : [] %}
     {% for tender in results %}
       <tr>
-        <td><span style="white-space:nowrap;">{{ tender.type|upper }}-{{tender.id}}</span></td>
-        <td>{{ tender.title|capitalize }}</td>
+        <td>
+          {% if app.user is not empty %}
+          <div class="btn-group" role="group">
+            <button class="btn btn-default dropdown-toggle btn-xs"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+              data-tender-action="addGroup">
+              <i class="fa fa-plus"></i>
+            </button>
+            <ul class="dropdown-menu">
+              {% set zocoExt = app.user.getExtensionByName('zoco') %}
+              {% for group in zocoExt.workgroups %}
+                <li>
+                  <a href="#" data-group-id="{{group.id}}" data-tender-id="{{tender.id}}" data-tender-type="{{tender.type}}">
+                    {{group.name}}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          <span style="white-space:nowrap;">{{ tender.type|upper }}-{{tender.id}}</span>
+        </td>
+        <td>
+          {{ tender.title|capitalize }}
+        </td>
         <td>{{ tenderTags.getTags(tender) }}</td>
-        <td>{{ tender.publicationDate is null ? '--' : tender.publicationDate|date('d/m/Y') }}</td>
+        <!--<td>{{ tender.publicationDate is null ? '--' : tender.publicationDate|date('d/m/Y') }}</td>-->
         <td>{{ tender.closingDate is null ? '--' : tender.closingDate|date('d/m/Y H:i:s') }}</td>
         <td>
           <div class="btn-group" role="group" style="min-width:100px">

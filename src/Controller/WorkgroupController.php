@@ -19,6 +19,8 @@ class WorkgroupController extends Controller {
       ->value('slug', '/[a-z0-9\-]+/i')
       ->bind('plugins_zoco_workgroup_show');
     $app->post('/zoco/workgroup', [$this, 'handleCreateWorkgroupForm'])->bind('plugins_zoco_handle_create_workgroup');
+    $app->post('/zoco/workgroup/{workgroupId}/{tenderId}/{tenderType}', [$this, 'addTenderWorkgroup'])->bind('plugins_zoco_add_tender_workgroup');
+
   }
 
   public function listWorkgroup() {
@@ -38,15 +40,53 @@ class WorkgroupController extends Controller {
 
   }
 
-  public function showWorkgroup($id,$slug) {
+  public function addTenderWorkgroup($workgroupId,$tenderId,$tenderType)
+  {
     $user = $this->get('user');
     $ext = $user->getExtensionByName('zoco', ZocoUserExtension::class);
     $twig = $this->get('twig');
 
+    $workgroup = $this->get('zoco.workgroup')->getGroupById($workgroupId);
+
+    $this->get('zoco.tender_workgroup')
+      ->attachTender($ext, $workgroup, ['type' => $tenderType, 'id' => $tenderId])
+    ;
+    return new JsonResponse(['result' => 'OK']);
+  }
+
+  public function showWorkgroup($id,$slug) {
+    $user = $this->get('user');
+    $ext = $user->getExtensionByName('zoco', ZocoUserExtension::class);
+    $twig = $this->get('twig');
+    $es = $this->get('zoco.elasticsearch');
+
     $workgroup = $this->get('zoco.workgroup')->getGroup($id, $slug);
+    $attachedTenders = $this->get('zoco.tender_workgroup')->getTenderWorkgroup($workgroup);
+    $tenders = [];
+    if(count($attachedTenders) > 0) {
+
+      $esClient = $es->getClient();
+      $params = [ 'body' => [ 'docs' => [] ] ];
+
+      foreach($attachedTenders as $attachedTender) {
+        $params['body']['docs'][] = [
+          '_index' => 'zoco',
+          '_type' => $attachedTender->getTenderType(),
+          '_id' => $attachedTender->getTenderId()
+        ];
+      }
+
+      $results = $esClient->mget($params);
+
+      foreach($results['docs'] as $hit) {
+        $tenders[] = $es->createDocumentFromHit($hit);
+      }
+
+    }
 
     return $twig->render('plugins/zoco/workgroup/showWorkgroup.html.twig', [
       'workgroup' => $workgroup,
+      'tenders' => $tenders,
       'user' => $ext
     ]);
 

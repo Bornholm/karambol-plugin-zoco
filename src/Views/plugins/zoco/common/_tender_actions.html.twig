@@ -1,6 +1,7 @@
 <script type="text/javascript">
   (function(config) {
     config.pinTenderTemplateUrl = "{{ path('plugins_zoco_pin_tender', {"tenderId":"__tenderId__", "tenderType":"__tenderType__"}) }}";
+    config.addTenderGroupTemplateUrl = "{{ path('plugins_zoco_add_tender_workgroup', {"tenderId":"__tenderId__", "tenderType":"__tenderType__", "workgroupId":"__workgroupId__"}) }}";
   }(this.__config__ = this.__config__ || {}));
 </script>
 {{ appendScript('plugins/zoco/js/tender-actions.js') }}

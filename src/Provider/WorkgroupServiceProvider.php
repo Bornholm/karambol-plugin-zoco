@@ -45,4 +45,11 @@ class WorkgroupService {
       ]);
   }
 
+  public function getGroupById($id)
+  {
+    return $this->em->getRepository(Workgroup::class)->findOneBy([
+      'id' => $id
+      ]);
+  }
+
 }

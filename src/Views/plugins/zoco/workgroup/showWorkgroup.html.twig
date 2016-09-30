@@ -11,7 +11,30 @@
     <div class="row">
       <div class="col-md-8">
         <h2>{{workgroup.name}}</h2>
-
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+                <tr>
+                  <th width="180px">{{ 'plugins.zoco.search.tender_id'|trans() }}</th>
+                  <th>{{ 'plugins.zoco.search.tender_title'|trans() }}</th>
+                  <!--<th>{{ 'plugins.zoco.search.tender_publication_date'|trans() }}</th> -->
+                  <th width="180px">{{ 'plugins.zoco.search.tender_closing_date'|trans() }}</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for tender in tenders %}
+                <tr>
+                  <td>  <span style="white-space:nowrap;">{{ tender.type|upper }}-{{tender.id}}</span></td>
+                  <td>
+                    {{ tender.title|capitalize }}
+                  </td>
+                  <!--<th>{{ 'plugins.zoco.search.tender_publication_date'|trans() }}</th> -->
+                  <td>{{ tender.closingDate is null ? '--' : tender.closingDate|date('d/m/Y H:i:s') }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div class="col-md-4">
         <h2>Membres du groupe</h2>

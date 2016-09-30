@@ -6,7 +6,8 @@
 
   var actionSelectors = {
     pin: '[data-tender-type][data-tender-id][data-tender-action=pin]',
-    unpin: '[data-tender-type][data-tender-id][data-tender-action=unpin]'
+    unpin: '[data-tender-type][data-tender-id][data-tender-action=unpin]',
+    addTenderGroup: '[data-tender-type][data-tender-id][data-group-id]'
   };
 
   $(document.body).on('click', actionSelectors.pin, function(evt) {
@@ -57,6 +58,31 @@
           .removeClass('btn-warning')
           .addClass('btn-default')
         ;
+      })
+      .fail(function(err) { throw err; })
+    ;
+
+  });
+
+  $(document.body).on('click', actionSelectors.addTenderGroup, function(evt) {
+    evt.preventDefault();
+
+    var $el = $(this);
+    var tenderType = $el.data('tenderType');
+    var tenderId = $el.data('tenderId');
+    var groupId = $el.data('groupId');
+    var actionUrl = config.addTenderGroupTemplateUrl
+      .replace('__tenderId__', tenderId)
+      .replace('__tenderType__', tenderType)
+      .replace('__workgroupId__', groupId)
+    ;
+    $.ajax({
+        method: 'POST',
+        url: actionUrl
+      })
+      .then(function(res) {
+        if(!res || res.result !== 'OK') throw new Error('Invalid AJAX response from server.');
+        console.log(res);
       })
       .fail(function(err) { throw err; })
     ;
