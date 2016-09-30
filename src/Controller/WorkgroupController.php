@@ -7,8 +7,10 @@ use Karambol\KarambolApp;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use KarambolZocoPlugin\Entity\Workgroup;
 use KarambolZocoPlugin\Entity\ZocoUserExtension;
+use Karambol\Entity\User;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use KarambolZocoPlugin\Form\Type\WorkgroupType;
+use KarambolZocoPlugin\Form\Type\AddUserWorkgroupType;
 
 class WorkgroupController extends Controller {
 
@@ -59,10 +61,12 @@ class WorkgroupController extends Controller {
     $ext = $user->getExtensionByName('zoco', ZocoUserExtension::class);
     $twig = $this->get('twig');
     $es = $this->get('zoco.elasticsearch');
-
+    $user = new User();
     $workgroup = $this->get('zoco.workgroup')->getGroup($id, $slug);
     $attachedTenders = $this->get('zoco.tender_workgroup')->getTenderWorkgroup($workgroup);
+    $formBuilder = $this->get('form.factory')->createBuilder(AddUserWorkgroupType::class, $user);
     $tenders = [];
+
     if(count($attachedTenders) > 0) {
 
       $esClient = $es->getClient();
@@ -87,9 +91,15 @@ class WorkgroupController extends Controller {
     return $twig->render('plugins/zoco/workgroup/showWorkgroup.html.twig', [
       'workgroup' => $workgroup,
       'tenders' => $tenders,
-      'user' => $ext
+      'user' => $ext,
+      'formAddUser' => $formBuilder->setMethod('POST')->getForm()->createView()
     ]);
 
+  }
+
+  public function handleAddUserWorkgroupForm($workgroupId,$workgroupSlug)
+  {
+    
   }
 
   public function handleCreateWorkgroupForm(){
@@ -102,7 +112,6 @@ class WorkgroupController extends Controller {
     $form->handleRequest($request);
 
     if( !$form->isValid() ) {
-      die('invalide mon pote');
       return $this->redirect($urlGen->generate('plugins_zoco_workgroup'));
     }
     $workgroup->setSlug($workgroup->getName());

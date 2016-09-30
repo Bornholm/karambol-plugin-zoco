@@ -41,12 +41,14 @@
         <div class="table-responsive">
           <div class="table-responsive">
             <table class="table table-condensed">
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                </tr>
-              </thead>
               <tbody>
+                <tr>
+                  <td>
+                    {{ form_start(formAddUser) }}
+                    {{ form_row(formAddUser.username, {}) }}
+                    {{ form_row(formAddUser.submit, {}) }}
+                  </td>
+                </tr>
                 {% for member in workgroup.users %}
                   <tr>
                     <td>{{member.user.username}}</a> </td>
